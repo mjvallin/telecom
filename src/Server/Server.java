@@ -1,8 +1,5 @@
-// Jean-Sebastien Dery
-// 260 430 688
-
 /**
- * This is the template file for Assignment 1 Problem 4 for ECSE 414 Fall 2013.
+ * 
  * 
  * This class implements a multi-threaded HTTP 1.0-compliant web server. The
  * root directory from which files are served is the same directory from which
@@ -10,7 +7,11 @@
  * response message with the appropriate HTML code so that the error information
  * is displayed.  
  * 
- * @author michaelrabbat
+ * @author Ming-Ju Lin
+ * @author Jean-Sebastien Dery
+ * @author Fakrul Islam
+ * @author Sen Li
+ * @author Nicholas Destounis
  *
  */
 import java.io.*;
@@ -24,7 +25,7 @@ import java.util.*;
  * @author michaelrabbat
  * 
  */
-public final class WebServer {
+public final class Server {
 	public static void main(String argx[]) throws Exception {
 		// Step 1: Set the port number (may not work with 80)
 		int port = 6789;
