@@ -50,15 +50,14 @@
 				 </div>
   				
 			</div>
-			<div class="row">
+			<div class="row" >
 				<h2>
 					Send Message
 				</h2>
-				 <form accept-charset="UTF-8" action="http://localhost:1234/" method="POST">
-                        <textarea class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
+                        <textarea id = "s2" class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
                        
-                        <button class="btn btn-info pull-right" type="submit">Send Message</button>
-                 </form>
+                        <button ng-click="postdata()" class="btn btn-info pull-right">Send Message</button>
+                
 			</div>
 		</div>
 
