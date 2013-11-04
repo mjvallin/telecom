@@ -4,9 +4,9 @@ import org.json.JSONObject;
 
 public class Message
 {
-	String from;
-	String to;
-	String content;
+	public String from;
+	public String to;
+	public String content;
 	JSONObject jsonObj;
 	
 	public Message(String from, String to, String content)
