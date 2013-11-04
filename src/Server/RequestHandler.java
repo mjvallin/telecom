@@ -1,4 +1,4 @@
-package src.Server;
+package Server;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -202,9 +202,31 @@ public class RequestHandler implements Runnable {
 		return (new String(readBody));
 	}
 	
-	
+	/*
+	 * TODO(mingju): a lot of assumption here:
+	 * assume request is in the form of:
+	 * from=username&to=username&message=some+message
+	 * and the message is always nice. (for now at least)
+	 */
 	private void processPOSTRequest(String request) {
+
+		String[] contents = request.split("\\&");
+		String from = "", to = "", content = "";
+		for(int i = 0; i < contents.length; ++i) {
+			String[] tmp = contents[i].split("\\=");
+			
+			if(tmp[0].equals("from")) {
+				from = tmp[1];
+			} else if(tmp[0].equals("to")) {
+				to = tmp[1];
+			} else if(tmp[0].equals("message")) {
+				//TODO(mingju): @Nadim, gimme the name of the textarea here
+				// assume content is nicely formatted
+				content = tmp[1].replace('+', ' ');
+			}
+		}
 		
+		DBHandler.storeMessage(new Message(from, to, content));		
 	}
 
 	/**

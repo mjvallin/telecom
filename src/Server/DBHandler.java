@@ -18,7 +18,7 @@ public class DBHandler
 	
 	public static final String DB_AUTH_FILE = "logins";
 
-	public void storeMessage(Message m)
+	public static void storeMessage(Message m)
 	{
 		String filename = m.to + DB_FILE_TYPE;
 		String path = DB_FOLDER + filename;
@@ -43,7 +43,7 @@ public class DBHandler
 		}
 	}
 	
-	public String getMessages(String username)
+	public static String getMessages(String username)
 	{
 		String filename = username + DB_FILE_TYPE;
 		String path = DB_FOLDER + filename;
@@ -75,7 +75,7 @@ public class DBHandler
 		return messagesInJSON.toString();
 	}
 	
-	public boolean isAuthenticated(String username, String password)
+	public static boolean isAuthenticated(String username, String password)
 	{
 		Boolean foundMatch = false;
 		
@@ -113,7 +113,7 @@ public class DBHandler
 		return foundMatch;
 	}
 	
-	public String getallUsernames()
+	public static String getallUsernames()
 	{
 		File f = new File(DB_FOLDER + DB_AUTH_FILE + DB_FILE_TYPE);
 		FileReader fReader;
@@ -158,15 +158,15 @@ public class DBHandler
 		Message mTwo = new Message("js", "nick", "you my boy");
 		
 		
-		db.storeMessage(mOne);
-		db.storeMessage(mTwo);
+		storeMessage(mOne);
+		storeMessage(mTwo);
 		
-		String s = db.getMessages("nick");
+		String s = getMessages("nick");
 		System.out.println(s);
 		*/
 		
-		System.out.println(db.isAuthenticated("nick", "123456"));
-		System.out.println(db.isAuthenticated("nick", "1266656"));
-		System.out.println(db.getallUsernames());
+		System.out.println(isAuthenticated("nick", "123456"));
+		System.out.println(isAuthenticated("nick", "1266656"));
+		System.out.println(getallUsernames());
 	}
 }
