@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Handles all the request made by the client.
@@ -24,6 +25,9 @@ public class RequestHandler implements Runnable {
 	final String SP = " ";
 	
 	private Socket socket;
+	private String getRequestPattern = "[Gg][Ee][Tt].*";
+	private String postRequestPattern = "[Pp][Oo][Ss][Tt].*";
+	private int spaceCharASCII = 32;
 
 	/**
 	 * Constructor takes the socket for this request
@@ -55,14 +59,21 @@ public class RequestHandler implements Runnable {
 
 		// Set up input stream filters
 		BufferedReader bufferedInput = new BufferedReader(socketInputStream);
-		DataOutputStream dataOutputStream = new DataOutputStream(
-				socketOutputStream);
+		DataOutputStream dataOutputStream = new DataOutputStream(socketOutputStream);
 
 		// Get the request line of the HTTP request message
 		String requestLine = bufferedInput.readLine();
-
-		// Display the request line
-		System.out.println("\nFirst header line: " + requestLine);
+		String request = extractRequestFromHeaderLine(requestLine);
+		
+		if (Pattern.matches(getRequestPattern, requestLine)) {
+			System.out.println("[INFO] The received request is a GET.");
+			processGETRequest(request);
+		} else if (Pattern.matches(postRequestPattern, requestLine)) {
+			System.out.println("[INFO] The received request is a POST.");
+			processGETRequest(request);
+		} else {
+			throw new Exception("The received request is not GET or POST.");
+		}
 
 		// Get and display the header lines
 		String headerLine;
@@ -129,6 +140,27 @@ public class RequestHandler implements Runnable {
 		socketInputStream.close();
 		socketOutputStream.close();
 		this.socket.close();
+	}
+	
+	/**
+	 * Returns the request within the HTTP request header line.
+	 * 
+	 * @param headerLine The header line to be parsed.
+	 * @return The extracted request.
+	 */
+	private String extractRequestFromHeaderLine(String headerLine) {
+		int endOfRequest = headerLine.indexOf(spaceCharASCII, 4);
+		String request = headerLine.substring(4, endOfRequest);
+		
+		return (request);
+	}
+	
+	private void processGETRequest(String request) {
+		
+	}
+	
+	private void processPOSTRequest(String request) {
+		
 	}
 
 	/**

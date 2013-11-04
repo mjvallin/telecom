@@ -26,14 +26,14 @@ import java.net.Socket;
  * @author michaelrabbat
  * 
  */
-public final class Server {
+public class Server {
 
 	/**
 	 * Defines the port on which the server will be listening to.
 	 */
-	private final int port = 80;
+	private static final int port = 1234;
 
-	public void main(String argx[]) throws Exception {
+	public static void main(String argx[]) throws Exception {
 
 		@SuppressWarnings("resource")
 		ServerSocket welcomeSocket = new ServerSocket(port);
