@@ -10,7 +10,7 @@
 	
 	</head>
 	<body>
-		<div class="container">
+		<div class="container" ng-controller="Chatbox">
 			<div ng-show = "loggedin" class="row">
 			<form class="form-inline" role="form">
 			  <div class="form-group">
@@ -35,22 +35,18 @@
 			</div>
 
 			<div class="row">
-				 <div class="col-xs-6 col-md-4"><h1>User List</h1></div>
-				 <div class="col-xs-12 col-md-8"><h1>Messages</h1></div>
+				 <div class="col-md-4"><h1>User List</h1><p ng-repeat="user in users"> {{user}}</p></div>
+				 <div class="col-md-8"><h1>Messages</h1>
+				 <div class ="pre-scrollable" >
+				 	<div ng-repeat="user in users" class="alert alert-success">
+					  <a href="#" class="alert-link">{{user}}: Hello!</a>
+					</div>
+					<div ng-repeat="user in users" class="alert alert-success">
+					  <a href="#" class="alert-link">{{user}}: Hello!</a>
+					</div>
+				 </div>
+				 </div>
   				
-				<div class=".col-xs-3">
-					<div class="row">
-						
-					</div>
-					<div  id="row">
-						<p ng-repeat="user in users"> {{user}}</p>
-					</div>
-				</div>
-				<div class=".col-xs-3">
-					<div class="row">
-						
-					</div>
-				</div>
 			</div>
 			<div class="row">
 				<h2>

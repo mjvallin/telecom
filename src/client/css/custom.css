@@ -1,0 +1,10 @@
+.bodycontainer {
+  //height: 200px
+  width: 100%;
+  margin: 0;
+}
+
+.table-scrollable {
+  margin: 0px;
+  padding: 0px;
+}
