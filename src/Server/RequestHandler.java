@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -18,16 +19,18 @@ import java.util.regex.Pattern;
  * @author Fakrul Islam
  * @author Sen Li
  * @author Nicholas Destounis
- *
+ * 
  */
 public class RequestHandler implements Runnable {
 	final String CRLF = "\r\n";
 	final String SP = " ";
-	
+
 	private Socket socket;
 	private String getRequestPattern = "[Gg][Ee][Tt].*";
 	private String postRequestPattern = "[Pp][Oo][Ss][Tt].*";
-	private String usersRequestPattern = ".*[Uu][Ss][Ee][Rr][Ss].*";
+	private String usersRequestPattern = "[Uu][Ss][Ee][Rr][Ss]";
+	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
+	private final int ASCII_SPACE_CHAR = 32;
 	private final int GET_REQUEST_START_POS = 4;
 	private final int POST_REQUEST_START_POS = 5;
 
@@ -56,7 +59,8 @@ public class RequestHandler implements Runnable {
 	 * @throws Exception
 	 */
 	private void processRequest() throws Exception {
-		InputStreamReader socketInputStream = new InputStreamReader(this.socket.getInputStream());
+		InputStreamReader socketInputStream = new InputStreamReader(
+				this.socket.getInputStream());
 		OutputStream socketOutputStream = this.socket.getOutputStream();
 
 		// Set up input stream filters
@@ -66,27 +70,27 @@ public class RequestHandler implements Runnable {
 		// Get the request line of the HTTP request message
 		String requestLine = bufferedInput.readLine();
 		String request;
-		
+
 		if (Pattern.matches(getRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a GET.");
 			request = extractRequestFromHeaderLine(GET_REQUEST_START_POS, requestLine);
 			processGETRequest(request);
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
-			request = extractRequestFromHeaderLine(POST_REQUEST_START_POS, requestLine);
-			processGETRequest(request);
+			String requestBody = extractBodyFromRequest(bufferedInput);
+			System.out.println("[INFO] The extracted body is=" + requestBody);
+			processPOSTRequest(requestBody);
 		} else {
-			throw new Exception("The received request is not GET or POST.");
+			throw new Exception(
+					"Cannot determined if the request is GET or POST.");
 		}
-		
 
-
-		// Get and display the header lines
+		/*// Get and display the header lines
 		String headerLine;
 		do {
 			headerLine = bufferedInput.readLine();
 			System.out.println("Additional header line: " + headerLine);
-		} while (!headerLine.isEmpty());
+		} while (headerLine != null);
 		System.out.println("No more header lines to display...");
 
 		// STEP 3a: Prepare and Send the HTTP Response message
@@ -140,30 +144,64 @@ public class RequestHandler implements Runnable {
 			RequestHandler.sendBytes(fis, socketOutputStream);
 		} else {
 			dataOutputStream.writeBytes(errorMessage);
-		}
+		}*/
 
 		// STEP 2b: Close the input/output streams and socket before returning
 		socketInputStream.close();
 		socketOutputStream.close();
 		this.socket.close();
 	}
-	
+
 	/**
 	 * Returns the request within the HTTP request header line.
 	 * 
-	 * @param headerLine The header line to be parsed.
+	 * @param headerLine
+	 *            The header line to be parsed.
 	 * @return The extracted request.
 	 */
 	private String extractRequestFromHeaderLine(int requestStartPost, String headerLine) {
-		String request = headerLine.substring(requestStartPost, headerLine.length());		
+		int endPosition = headerLine.indexOf(ASCII_SPACE_CHAR, requestStartPost);
+		String request = headerLine.substring(requestStartPost, endPosition);
+		System.out.println("[INFO] The extracted request is =" + request);
 		return (request);
 	}
-	
+
 	private void processGETRequest(String request) {
 		if (Pattern.matches(usersRequestPattern, request)) {
-			
+
 		}
 	}
+	
+	
+	private int extractContentLength(String line) {
+		String numberOfCharacters = line.substring(16, line.length());
+		return (Integer.parseInt(numberOfCharacters));
+	}
+
+	private String extractBodyFromRequest(BufferedReader bufferedInput) throws IOException {
+		System.out.println("[INFO] Processing POST request.");
+		
+		// Go through the request's header so we can reach the body.
+		int contentLength = 0;
+		String headerLine;
+		do {
+			headerLine = bufferedInput.readLine();
+			System.out.println("[DEBUG] Traversing the request header=" + headerLine);
+			
+			// If the header is the Content-Length, fetch the number of characters stored.
+			if (Pattern.matches(contentLengthPattern, headerLine)) {
+				contentLength = extractContentLength(headerLine);
+				System.out.println("[INFO] The number of characters to read is=" + contentLength);
+			}
+		} while (!headerLine.isEmpty());
+
+		// Reads the required number of characters.
+		char[] readBody = new char[contentLength];
+		bufferedInput.read(readBody, 0, contentLength);
+		
+		return (new String(readBody));
+	}
+	
 	
 	private void processPOSTRequest(String request) {
 		
