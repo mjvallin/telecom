@@ -10,9 +10,9 @@
 	
 	</head>
 	<body>
-		<div class="container">
-			<div ng-show = "loggedin" class="row">
-			<form class="form-inline" role="form">
+		<div ng-show = "!loggedin" class="row" style="background:#EEE; height:45px;">
+			<div class="container">
+			<form class="form-inline" role="form" style="margin-top:5px;">
 			  <div class="form-group">
 			    <label class="sr-only" for="exampleInputEmail2">Email address</label>
 			    <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Enter email">
@@ -29,38 +29,35 @@
 			  <button type="submit" class="btn btn-default">Sign in</button>
 			</form>
 			</div>
+		<div class="container" ng-controller="Chatbox">
+			
 
-			<div class="row" ng-show = "!loggedin">
+			<div class="row" ng-show = "loggedin">
 				Hello {{User}}
 			</div>
 
 			<div class="row">
-				 <div class="col-xs-6 col-md-4"><h1>User List</h1></div>
-				 <div class="col-xs-12 col-md-8"><h1>Messages</h1></div>
+				 <div class="col-md-4"><h1>User List</h1><p ng-repeat="user in users"> {{user}}</p></div>
+				 <div class="col-md-8"><h1>Messages</h1>
+				 <div class ="pre-scrollable" >
+				 	<div ng-repeat="user in users" class="alert alert-success">
+					  <a href="#" class="alert-link">{{user}}: Hello!</a>
+					</div>
+					<div ng-repeat="user in users" class="alert alert-success">
+					  <a href="#" class="alert-link">{{user}}: Hello!</a>
+					</div>
+				 </div>
+				 </div>
   				
-				<div class=".col-xs-3">
-					<div class="row">
-						
-					</div>
-					<div  id="row">
-						<p ng-repeat="user in users"> {{user}}</p>
-					</div>
-				</div>
-				<div class=".col-xs-3">
-					<div class="row">
-						
-					</div>
-				</div>
 			</div>
-			<div class="row">
+			<div class="row" >
 				<h2>
 					Send Message
 				</h2>
-				 <form accept-charset="UTF-8" action="http://localhost:1234/" method="POST">
-                        <textarea class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
+                        <textarea id = "s2" class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
                        
-                        <button class="btn btn-info pull-right" type="submit">Send Message</button>
-                 </form>
+                        <button ng-click="postdata()" class="btn btn-info pull-right">Send Message</button>
+                
 			</div>
 		</div>
 

@@ -1,4 +1,4 @@
-package src.Server;
+package Server;
 
 /**
  * 
