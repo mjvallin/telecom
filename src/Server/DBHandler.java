@@ -17,7 +17,7 @@ public class DBHandler
 	public static final String DB_FILE_TYPE = ".txt";
 	
 	public static final String DB_AUTH_FILE = "logins";
-	
+
 	public void storeMessage(Message m)
 	{
 		String filename = m.to + DB_FILE_TYPE;
@@ -28,6 +28,8 @@ public class DBHandler
 		try {
 			FileWriter fr = new FileWriter(f, true);
 			PrintWriter pr = new PrintWriter(fr);
+			
+			//write the json string of the message to the file
 			pr.println(m.getJSONString());
 			
 			fr.close();
