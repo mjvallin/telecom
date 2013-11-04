@@ -27,7 +27,9 @@ public class RequestHandler implements Runnable {
 	private Socket socket;
 	private String getRequestPattern = "[Gg][Ee][Tt].*";
 	private String postRequestPattern = "[Pp][Oo][Ss][Tt].*";
-	private int spaceCharASCII = 32;
+	private String usersRequestPattern = ".*[Uu][Ss][Ee][Rr][Ss].*";
+	private final int GET_REQUEST_START_POS = 4;
+	private final int POST_REQUEST_START_POS = 5;
 
 	/**
 	 * Constructor takes the socket for this request
@@ -63,17 +65,21 @@ public class RequestHandler implements Runnable {
 
 		// Get the request line of the HTTP request message
 		String requestLine = bufferedInput.readLine();
-		String request = extractRequestFromHeaderLine(requestLine);
+		String request;
 		
 		if (Pattern.matches(getRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a GET.");
+			request = extractRequestFromHeaderLine(GET_REQUEST_START_POS, requestLine);
 			processGETRequest(request);
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
+			request = extractRequestFromHeaderLine(POST_REQUEST_START_POS, requestLine);
 			processGETRequest(request);
 		} else {
 			throw new Exception("The received request is not GET or POST.");
 		}
+		
+
 
 		// Get and display the header lines
 		String headerLine;
@@ -148,15 +154,15 @@ public class RequestHandler implements Runnable {
 	 * @param headerLine The header line to be parsed.
 	 * @return The extracted request.
 	 */
-	private String extractRequestFromHeaderLine(String headerLine) {
-		int endOfRequest = headerLine.indexOf(spaceCharASCII, 4);
-		String request = headerLine.substring(4, endOfRequest);
-		
+	private String extractRequestFromHeaderLine(int requestStartPost, String headerLine) {
+		String request = headerLine.substring(requestStartPost, headerLine.length());		
 		return (request);
 	}
 	
 	private void processGETRequest(String request) {
-		
+		if (Pattern.matches(usersRequestPattern, request)) {
+			
+		}
 	}
 	
 	private void processPOSTRequest(String request) {
