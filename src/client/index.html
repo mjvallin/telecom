@@ -6,7 +6,7 @@
 	<head>
 		<script src = "js/angular.js"></script>
 		<script src = "js/angular-resource.js"></script>
-		<script src = "js/todo.js"></script>
+		<script src = "js/chatimplementation.js"></script>
 	
 	</head>
 	<body>
@@ -39,8 +39,8 @@
 					<div class="row">
 						<h1>User List</h1>
 					</div>
-					<div ng-repeat="user in users" id="row">
-						<p>{{user.username}}</p>
+					<div  id="row">
+						<p ng-repeat="user in users"> {{user}}</p>
 					</div>
 				</div>
 				<div class=".col-xs-6">
@@ -51,7 +51,7 @@
 					</div>
 				</div>
 			</div>
-			<div id="row">
+			<div class="row">
 			</div>
 		</div>
 
