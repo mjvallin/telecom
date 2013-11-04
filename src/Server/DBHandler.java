@@ -111,6 +111,42 @@ public class DBHandler
 		return foundMatch;
 	}
 	
+	public String getallUsernames()
+	{
+		File f = new File(DB_FOLDER + DB_AUTH_FILE + DB_FILE_TYPE);
+		FileReader fReader;
+		
+		JSONArray usernamesInJSON = new JSONArray();
+		
+		try {
+			fReader = new FileReader(f);
+			
+			BufferedReader bReader = new BufferedReader(fReader);
+			
+			String s = bReader.readLine();
+			
+			while(s != null)
+			{
+				String[] pair = s.split("\\s+");
+				
+				usernamesInJSON.put(pair[0]);
+				
+				s = bReader.readLine();
+			}
+
+			fReader.close();
+			bReader.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return usernamesInJSON.toString();
+	}
+	
 	public static void main(String[] args)
 	{	
 		DBHandler db = new DBHandler();
@@ -129,5 +165,6 @@ public class DBHandler
 		
 		System.out.println(db.isAuthenticated("nick", "123456"));
 		System.out.println(db.isAuthenticated("nick", "1266656"));
+		System.out.println(db.getallUsernames());
 	}
 }
