@@ -13,7 +13,7 @@ function Chatbox($scope,$resource) {
 	
 	$scope.users = ["i.nadim", "mjval_lin", "jdery", "nick"];
 	
-	console.log($scope.users);
+	
 	send = function(from, to, message) {
 		
 		if(from == to || !isValidUser(to)) {
