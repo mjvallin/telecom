@@ -11,8 +11,29 @@ function Chatbox($scope,$resource) {
 	jsoncallback:'parseuser'},
 	{get:{method:'JSONP'}});
 	
-	$scope.users = ["nadim","val","js"];
-
+	$scope.users = ["i.nadim", "mjval_lin", "jdery", "nick"];
+	
+	
+	send = function(from, to, message) {
+		
+		if(from == to || !isValidUser(to)) {
+			//alert
+		} else {
+			//post  w/o going to another page. 
+			//clear message box
+			//message sucessfully sent, get this from post result
+		}
+	}
+	
+	isValidUser = function(username) {
+		for(var user in $scope.users) {
+			if(user = username) {
+				return true;
+			}		
+		}
+		
+		return false;
+	}
 	
 	
 }
