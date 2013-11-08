@@ -8,18 +8,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 /**
  * Handles all the request made by the client.
- * 
+ *
  * @author Ming-Ju Lin
  * @author Jean-Sebastien Dery
  * @author Fakrul Islam
  * @author Sen Li
  * @author Nicholas Destounis
- * 
+ *
  */
 public class RequestHandler implements Runnable {
 	final String CRLF = "\r\n";
@@ -28,6 +30,7 @@ public class RequestHandler implements Runnable {
 	private Socket socket;
 	private String getRequestPattern = "[Gg][Ee][Tt].*";
 	private String postRequestPattern = "[Pp][Oo][Ss][Tt].*";
+	private String optionRequestPattern = "[Oo][Pp][Tt][Ii][Oo][Nn][Ss].*";
 	private String usersRequestPattern = "[Uu][Ss][Ee][Rr][Ss]";
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
 	private final int ASCII_SPACE_CHAR = 32;
@@ -55,7 +58,7 @@ public class RequestHandler implements Runnable {
 
 	/**
 	 * This is where the action occurs
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void processRequest() throws Exception {
@@ -71,6 +74,8 @@ public class RequestHandler implements Runnable {
 		String requestLine = bufferedInput.readLine();
 		String request;
 
+		System.out.println("requestLine: " + requestLine);
+
 		if (Pattern.matches(getRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a GET.");
 			request = extractRequestFromHeaderLine(GET_REQUEST_START_POS, requestLine);
@@ -80,9 +85,23 @@ public class RequestHandler implements Runnable {
 			String requestBody = extractBodyFromRequest(bufferedInput);
 			System.out.println("[INFO] The extracted body is=" + requestBody);
 			processPOSTRequest(requestBody);
+		} else if(Pattern.matches(optionRequestPattern, requestLine)) {
+			// handle preflight request
+			// TODO(mingju): if we get a preflight request,
+			// 		         we should reply back so POST request will follow (?)
+			// 			     or better, somebody find a way to avoid preflight request
+
+//			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF + "\n");
+//			dataOutputStream.writeBytes("Access-Control-Allow-Origin: http://localhost/" + CRLF);
+//			dataOutputStream.writeBytes("Access-Control-Allow-Methods: GET, POST, PUT" + CRLF);
+//			dataOutputStream.writeBytes("Access-Control-Request-Headers: " +
+//									"accept, x-requested-with, content-type" + CRLF);
+//			dataOutputStream.writeBytes("Content-Type: " +
+//									"application/x-www-form-urlencoded" + CRLF + "\n");
+
+
 		} else {
-			throw new Exception(
-					"Cannot determined if the request is GET or POST.");
+			throw new Exception("Cannot determine if the request is GET or POST.");
 		}
 
 		/*// Get and display the header lines
@@ -154,7 +173,7 @@ public class RequestHandler implements Runnable {
 
 	/**
 	 * Returns the request within the HTTP request header line.
-	 * 
+	 *
 	 * @param headerLine
 	 *            The header line to be parsed.
 	 * @return The extracted request.
@@ -171,8 +190,8 @@ public class RequestHandler implements Runnable {
 
 		}
 	}
-	
-	
+
+
 	private int extractContentLength(String line) {
 		String numberOfCharacters = line.substring(16, line.length());
 		return (Integer.parseInt(numberOfCharacters));
@@ -180,14 +199,14 @@ public class RequestHandler implements Runnable {
 
 	private String extractBodyFromRequest(BufferedReader bufferedInput) throws IOException {
 		System.out.println("[INFO] Processing POST request.");
-		
+
 		// Go through the request's header so we can reach the body.
 		int contentLength = 0;
 		String headerLine;
 		do {
 			headerLine = bufferedInput.readLine();
 			System.out.println("[DEBUG] Traversing the request header=" + headerLine);
-			
+
 			// If the header is the Content-Length, fetch the number of characters stored.
 			if (Pattern.matches(contentLengthPattern, headerLine)) {
 				contentLength = extractContentLength(headerLine);
@@ -198,14 +217,15 @@ public class RequestHandler implements Runnable {
 		// Reads the required number of characters.
 		char[] readBody = new char[contentLength];
 		bufferedInput.read(readBody, 0, contentLength);
-		
+
 		return (new String(readBody));
 	}
-	
+
 	/*
+	 * FIXME: this method is not useful util we manage to get a POST
+	 * 		  request instead of an OPTIONS
 	 * TODO(mingju): a lot of assumption here:
 	 * assume request is in the form of:
-	 * from=username&to=username&message=some+message
 	 * and the message is always nice. (for now at least)
 	 */
 	private void processPOSTRequest(String request) {
@@ -214,7 +234,7 @@ public class RequestHandler implements Runnable {
 		String from = "", to = "", content = "";
 		for(int i = 0; i < contents.length; ++i) {
 			String[] tmp = contents[i].split("\\=");
-			
+
 			if(tmp[0].equals("from")) {
 				from = tmp[1];
 			} else if(tmp[0].equals("to")) {
@@ -225,14 +245,14 @@ public class RequestHandler implements Runnable {
 				content = tmp[1].replace('+', ' ');
 			}
 		}
-		
-		DBHandler.storeMessage(new Message(from, to, content));		
+
+		DBHandler.storeMessage(new Message(from, to, content));
 	}
 
 	/**
 	 * Private method that returns the appropriate MIME-type string based on the
 	 * suffix of the appended file
-	 * 
+	 *
 	 * @param fileName
 	 * @return
 	 */
@@ -250,7 +270,7 @@ public class RequestHandler implements Runnable {
 
 	/**
 	 * Private helper method to read the file and send it to the socket
-	 * 
+	 *
 	 * @param fis
 	 * @param os
 	 * @throws Exception

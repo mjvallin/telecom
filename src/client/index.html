@@ -54,9 +54,11 @@
 				<h2>
 					Send Message
 				</h2>
-                        <textarea id = "s2" class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
-                       
-                        <button ng-click="postdata()" class="btn btn-info pull-right">Send Message</button>
+						From: <input id = "fromUser" class="form-control counted" type="text" name="from">
+						To: <input id = "toUser" class="form-control counted" type="text" name="to">                        
+						Message: 
+						<textarea id = "messageBox" class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
+                        <button ng-click="sendMessage()" class="btn btn-info pull-right">Send Message</button>
                 
 			</div>
 		</div>
