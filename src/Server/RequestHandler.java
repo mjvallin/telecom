@@ -85,21 +85,6 @@ public class RequestHandler implements Runnable {
 			String requestBody = extractBodyFromRequest(bufferedInput);
 			System.out.println("[INFO] The extracted body is=" + requestBody);
 			processPOSTRequest(requestBody);
-		} else if(Pattern.matches(optionRequestPattern, requestLine)) {
-			// handle preflight request
-			// TODO(mingju): if we get a preflight request,
-			// 		         we should reply back so POST request will follow (?)
-			// 			     or better, somebody find a way to avoid preflight request
-
-//			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF + "\n");
-//			dataOutputStream.writeBytes("Access-Control-Allow-Origin: http://localhost/" + CRLF);
-//			dataOutputStream.writeBytes("Access-Control-Allow-Methods: GET, POST, PUT" + CRLF);
-//			dataOutputStream.writeBytes("Access-Control-Request-Headers: " +
-//									"accept, x-requested-with, content-type" + CRLF);
-//			dataOutputStream.writeBytes("Content-Type: " +
-//									"application/x-www-form-urlencoded" + CRLF + "\n");
-
-
 		} else {
 			throw new Exception("Cannot determine if the request is GET or POST.");
 		}
@@ -222,14 +207,21 @@ public class RequestHandler implements Runnable {
 	}
 
 	/*
-	 * FIXME: this method is not useful util we manage to get a POST
-	 * 		  request instead of an OPTIONS
-	 * TODO(mingju): a lot of assumption here:
-	 * assume request is in the form of:
-	 * and the message is always nice. (for now at least)
 	 */
 	private void processPOSTRequest(String request) {
 
+		/*
+		 * for now just storeMessage
+		 * later on we will handle login request as well
+		 */
+		storeMessage(request);
+
+
+	}
+
+	// TODO(mingju): format this nicely.
+	//				 parse from a JSON String
+	private void storeMessage(String request) {
 		String[] contents = request.split("\\&");
 		String from = "", to = "", content = "";
 		for(int i = 0; i < contents.length; ++i) {

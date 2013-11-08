@@ -41,7 +41,9 @@ function Chatbox($scope, $http, $resource) {
 			method: "POST",
 			url: 'http://localhost:1234/', 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-			data : {'from': 'i.nadim', 'to': 'nick', 'message': 'hi bro'}			
+			//data : {'from': 'i.nadim', 'to': 'nick', 'message': 'hi bro'}			
+			data: 'from=' + fromUser + "&to=" + toUser + "&message=" + text
+			//TODO(mingju): this is a bit ugly. Parse from JSON String is better
 		}).
 		  success(function(data, status) {
 			$scope.status = status;
