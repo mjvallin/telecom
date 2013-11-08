@@ -3,15 +3,13 @@ package Server;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+
+import org.json.JSONObject;
 
 /**
  * Handles all the request made by the client.
@@ -85,70 +83,20 @@ public class RequestHandler implements Runnable {
 			String requestBody = extractBodyFromRequest(bufferedInput);
 			System.out.println("[INFO] The extracted body is=" + requestBody);
 			processPOSTRequest(requestBody);
+
+			// TODO(mingju): Client doesn't pick up this for some reason
+			//			     need to debug. My guess is AngularJS' problem again.
+			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF);
+			dataOutputStream.writeBytes("Content-Type: application/json" + CRLF);
+			JSONObject json = new JSONObject();
+			json.put("name", "valentine");
+			System.out.println(json);
+			dataOutputStream.writeBytes(json + CRLF + "\n");
+
+
 		} else {
 			throw new Exception("Cannot determine if the request is GET or POST.");
 		}
-
-		/*// Get and display the header lines
-		String headerLine;
-		do {
-			headerLine = bufferedInput.readLine();
-			System.out.println("Additional header line: " + headerLine);
-		} while (headerLine != null);
-		System.out.println("No more header lines to display...");
-
-		// STEP 3a: Prepare and Send the HTTP Response message
-		// Extract the filename from the request line
-		StringTokenizer tokens = new StringTokenizer(requestLine);
-		tokens.nextToken(); // skip over the method, which we'll assume is "GET"
-		String fileName = tokens.nextToken();
-
-		// Prepend a "." to the file name so that the file request is in the
-		// current directory
-		fileName = "." + fileName;
-
-		// Open the requested file
-		FileInputStream fis = null;
-		boolean fileExists = true;
-		try {
-			fis = new FileInputStream(fileName);
-		} catch (FileNotFoundException e) {
-			fileExists = false;
-		}
-
-		// Construct the response message header
-		String statusLine = null;
-		String contentTypeLine = "Content-Type:";
-		String errorMessage = "<HTML><HEAD><TITLE>404 Not Found</TITLE></HEAD><BODY>404 Not Found</BODY></HTML>";
-
-		// Fill in the values of statusLine and contentTypeLine based on whether
-		// or not the requested file was found
-		if (fileExists) {
-			statusLine = "HTTP/1.0" + SP + 200 + SP + "OK" + CRLF;
-			contentTypeLine = contentTypeLine + SP
-					+ RequestHandler.contentType(fileName) + CRLF;
-		} else {
-			statusLine = "HTTP/1.0" + SP + 404 + SP + "Not Found" + CRLF;
-			contentTypeLine = contentTypeLine + SP + "text/html" + CRLF;
-		}
-
-		// Send a HTTP response header containing the status line and
-		// content-type line. Don't forget to include a blank line after the
-		// content-type to signal the end of the header.
-		dataOutputStream.writeBytes(statusLine);
-		dataOutputStream.writeBytes(contentTypeLine);
-		dataOutputStream.writeBytes(CRLF);
-
-		System.out.println("Header sent to the cliend:\n" + statusLine
-				+ contentTypeLine);
-
-		// Send the body of the message (the web object)
-		// You may use the sendBytes helper method provided
-		if (fileExists) {
-			RequestHandler.sendBytes(fis, socketOutputStream);
-		} else {
-			dataOutputStream.writeBytes(errorMessage);
-		}*/
 
 		// STEP 2b: Close the input/output streams and socket before returning
 		socketInputStream.close();

@@ -42,7 +42,7 @@ function Chatbox($scope, $http, $resource) {
 			url: 'http://localhost:1234/', 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			//data : {'from': 'i.nadim', 'to': 'nick', 'message': 'hi bro'}			
-			data: 'from=' + fromUser + "&to=" + toUser + "&message=" + text
+			data: 'from=' + fromUser + "&to=" + toUser + "&message=" + text,
 			//TODO(mingju): this is a bit ugly. Parse from JSON String is better
 		}).
 		  success(function(data, status) {
@@ -53,7 +53,7 @@ function Chatbox($scope, $http, $resource) {
 		  error(function(data, status) {
 			$scope.data = data || "Request failed";
 			$scope.status = status;
-			alert("fail");
+			//alert($scope.data);
 		});
 	};
 	
