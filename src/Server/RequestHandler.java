@@ -35,7 +35,6 @@ public class RequestHandler implements Runnable {
 	private String singleDigitNumberPattern = "[0123456789]";
 	private final int ASCII_SPACE_CHAR = 32;
 	private final int GET_REQUEST_START_POS = 4;
-	private final int POST_REQUEST_START_POS = 5;
 
 	/**
 	 * Constructor takes the socket for this request
@@ -75,14 +74,14 @@ public class RequestHandler implements Runnable {
 		String request;
 
 		System.out.println("requestLine: " + requestLine);
-
+		
 		if (Pattern.matches(getRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a GET.");
-			request = extractRequestFromHeaderLine(GET_REQUEST_START_POS, requestLine);
+			request = extractContentFromGETRequest(requestLine);
 			processGETRequest(request);
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
-			String requestBody = extractBodyFromRequest(bufferedInput);
+			String requestBody = extractBodyFromPOSTRequest(bufferedInput);
 			System.out.println("[INFO] The extracted body is [" + requestBody + "]");
 			processPOSTRequest(requestBody);
 
@@ -102,22 +101,22 @@ public class RequestHandler implements Runnable {
 			throw new Exception("Cannot determine if the request type.");
 		}
 
-		// STEP 2b: Close the input/output streams and socket before returning
 		socketInputStream.close();
 		socketOutputStream.close();
 		this.socket.close();
 	}
 
 	/**
-	 * Returns the request within the HTTP request header line.
+	 * Extracts the content of a GET request.
 	 *
-	 * @param headerLine
-	 *            The header line to be parsed.
-	 * @return The extracted request.
+	 * @param headerLine The header line to be parsed.
+	 * @return The extracted content from the GET request.
 	 */
-	private String extractRequestFromHeaderLine(int requestStartPost, String headerLine) {
-		int endPosition = headerLine.indexOf(ASCII_SPACE_CHAR, requestStartPost);
-		String request = headerLine.substring(requestStartPost, endPosition);
+	private String extractContentFromGETRequest(String headerLine) {
+		int startPosition = headerLine.indexOf(ASCII_SPACE_CHAR);
+		System.out.println("Matcher ending position: " + startPosition);
+		int endPosition = headerLine.indexOf(ASCII_SPACE_CHAR, startPosition+1);
+		String request = headerLine.substring(startPosition, endPosition);
 		System.out.println("[INFO] The extracted request is =" + request);
 		return (request);
 	}
@@ -129,11 +128,10 @@ public class RequestHandler implements Runnable {
 	}
 
 	/**
-	 * Extracts the content length from defined in the Content-Length header field.
-	 * 
+	 * Extracts the content length from the MIME field Content-Length.
 	 * 
 	 * @param line The line containing the Content-Length header field (MIME formatted)
-	 * @return The extracted content length.
+	 * @return The extracted content length and 0 if no numbers were found in the String.
 	 */
 	private int extractContentLength(String line) {
 		// Fetches the position at which the Content-Length is defined.
@@ -150,7 +148,14 @@ public class RequestHandler implements Runnable {
 		}
 	}
 
-	private String extractBodyFromRequest(BufferedReader bufferedInput) throws IOException {
+	/**
+	 * Extracts the body section of a POST request.
+	 * 
+	 * @param bufferedInput The BufferedReader of the received request from the client.
+	 * @return The extracted body section of the POST request.
+	 * @throws IOException 
+	 */
+	private String extractBodyFromPOSTRequest(BufferedReader bufferedInput) throws IOException {
 		System.out.println("[INFO] Processing POST request.");
 
 		// Go through the request's header so we can reach the body.
@@ -167,7 +172,7 @@ public class RequestHandler implements Runnable {
 			}
 		} while (!headerLine.isEmpty());
 
-		// Reads the required number of characters.
+		// Reads the required number of characters from the request.
 		char[] readBody = new char[contentLength];
 		bufferedInput.read(readBody, 0, contentLength);
 
@@ -205,44 +210,8 @@ public class RequestHandler implements Runnable {
 			}
 		}
 
+		System.out.println("[INFO] Storing message: from=" + from + " to=" + to + " message=" + content);
+		
 		DBHandler.storeMessage(new Message(from, to, content));
-	}
-
-	/**
-	 * Private method that returns the appropriate MIME-type string based on the
-	 * suffix of the appended file
-	 *
-	 * @param fileName
-	 * @return
-	 */
-	private static String contentType(String fileName) {
-		if (fileName.endsWith(".htm") || fileName.endsWith(".html")) {
-			return "text/html";
-		} else if (fileName.endsWith(".jpeg") || fileName.endsWith(".jpg")) {
-			return ("image/jpeg");
-		} else if (fileName.endsWith(".gif")) {
-			return ("image/gif");
-		}
-		// STEP 3b: Add code here to deal with GIFs and JPEGs
-		return "application/octet-stream";
-	}
-
-	/**
-	 * Private helper method to read the file and send it to the socket
-	 *
-	 * @param fis
-	 * @param os
-	 * @throws Exception
-	 */
-	private static void sendBytes(FileInputStream fis, OutputStream os)
-			throws Exception {
-		// Allocate a 1k buffer to hold bytes on their way to the socket
-		byte[] buffer = new byte[1024];
-		int bytes = 0;
-
-		// Copy requested file into the socket's output stream
-		while ((bytes = fis.read(buffer)) != -1) {
-			os.write(buffer, 0, bytes);
-		}
 	}
 }

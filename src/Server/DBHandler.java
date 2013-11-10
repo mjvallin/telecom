@@ -78,8 +78,29 @@ public class DBHandler
 		return messagesInJSON.toString();
 	}
 	
-	public static boolean isAuthenticated(String username, String password)
+	/**
+	 * Will verify if the user has been authenticated on the server.
+	 * 
+	 * @param username The user to verify.
+	 * @return True if the user is already authenticated, and false otherwise.
+	 */
+	public static boolean isUserAuthenticated(String username) {
+		//TODO: it needs to be filled.
+		
+		return (true);
+	}
+	
+	/**
+	 * Authenticates a user based on its username and password. It will save the state of the authentication for the user.
+	 * 
+	 * @param username The user to authenticate.
+	 * @param password Its password.
+	 * @return True if the user was successfuly authenticated, and false otherwise.
+	 */
+	public static boolean authenticateUser(String username, String password)
 	{
+		//TODO (ejeadry): We need to store the state of the user here, and make sure that he cannot login on different computers.
+		
 		Boolean foundMatch = false;
 		
 		File f = new File(DB_FOLDER + DB_AUTH_FILE + DB_FILE_TYPE);
@@ -168,8 +189,8 @@ public class DBHandler
 		System.out.println(s);
 		*/
 		
-		System.out.println(isAuthenticated("nick", "123456"));
-		System.out.println(isAuthenticated("nick", "1266656"));
+		System.out.println(authenticateUser("nick", "123456"));
+		System.out.println(authenticateUser("nick", "1266656"));
 		System.out.println(getallUsernames());
 	}
 }
