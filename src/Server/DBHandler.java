@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DBHandler 
@@ -69,6 +70,8 @@ public class DBHandler
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		

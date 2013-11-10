@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONObject;
@@ -31,6 +32,7 @@ public class RequestHandler implements Runnable {
 	private String optionRequestPattern = "[Oo][Pp][Tt][Ii][Oo][Nn][Ss].*";
 	private String usersRequestPattern = "[Uu][Ss][Ee][Rr][Ss]";
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
+	private String singleDigitNumberPattern = "[0123456789]";
 	private final int ASCII_SPACE_CHAR = 32;
 	private final int GET_REQUEST_START_POS = 4;
 	private final int POST_REQUEST_START_POS = 5;
@@ -81,9 +83,11 @@ public class RequestHandler implements Runnable {
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
 			String requestBody = extractBodyFromRequest(bufferedInput);
-			System.out.println("[INFO] The extracted body is=" + requestBody);
+			System.out.println("[INFO] The extracted body is [" + requestBody + "]");
 			processPOSTRequest(requestBody);
 
+			
+			
 			// TODO(mingju): Client doesn't pick up this for some reason
 			//			     need to debug. My guess is AngularJS' problem again.
 			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF);
@@ -95,7 +99,7 @@ public class RequestHandler implements Runnable {
 
 
 		} else {
-			throw new Exception("Cannot determine if the request is GET or POST.");
+			throw new Exception("Cannot determine if the request type.");
 		}
 
 		// STEP 2b: Close the input/output streams and socket before returning
@@ -124,10 +128,26 @@ public class RequestHandler implements Runnable {
 		}
 	}
 
-
+	/**
+	 * Extracts the content length from defined in the Content-Length header field.
+	 * 
+	 * 
+	 * @param line The line containing the Content-Length header field (MIME formatted)
+	 * @return The extracted content length.
+	 */
 	private int extractContentLength(String line) {
-		String numberOfCharacters = line.substring(16, line.length());
-		return (Integer.parseInt(numberOfCharacters));
+		// Fetches the position at which the Content-Length is defined.
+		Pattern singleDigit = Pattern.compile(singleDigitNumberPattern);
+		Matcher matcher = singleDigit.matcher(line);
+		
+		if (matcher.find()) {
+			int startingPosition = matcher.start();
+			int endingPosition = matcher.end() + 1;
+			String contentLength = line.substring(startingPosition, endingPosition);
+			return (Integer.parseInt(contentLength));
+		} else {
+			return (0);
+		}
 	}
 
 	private String extractBodyFromRequest(BufferedReader bufferedInput) throws IOException {
@@ -154,8 +174,7 @@ public class RequestHandler implements Runnable {
 		return (new String(readBody));
 	}
 
-	/*
-	 */
+	
 	private void processPOSTRequest(String request) {
 
 		/*
