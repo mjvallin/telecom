@@ -35,10 +35,10 @@ public class RequestHandler implements Runnable {
 	private String getRequestAuthenticate = ".*[Aa][Uu][Tt][Hh][Ee][Nn][Tt][Ii][Cc][Aa][Tt][Ee].*[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd].*";
 	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private final int ASCII_SPACE_CHAR = 32;
-	private final int GET_REQUEST_START_POS = 4;
 	
 	private ResponseMessage SERVER_ERROR_MESSAGE = new ResponseMessage(ResponseCode.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN, "An error occured on the server while processing the request.");
-
+	private ResponseMessage BAD_REQUEST_FROM_CLIENT = new ResponseMessage(ResponseCode.BAD_REQUEST, ContentType.TEXT_PLAIN, "The issued request is not properly formatted and the server cannot process it.");
+	
 	/**
 	 * Constructor takes the socket for this request
 	 */
@@ -78,7 +78,8 @@ public class RequestHandler implements Runnable {
 		ResponseMessage response = null;
 		
 		// FIXME: this is only for testing purposes.
-		requestLine = "GET allmessages=nick HTTP/1.1";
+		//requestLine = "GET allmessages=nick HTTP/1.1";
+		requestLine = "GET authenticate=nick/password=userPassword HTTP/1.1";
 		
 		System.out.println("[INFO] The request is: " + requestLine);
 		
@@ -105,7 +106,7 @@ public class RequestHandler implements Runnable {
 
 
 		} else {
-			throw new Exception("Cannot determine if the request type.");
+			response = BAD_REQUEST_FROM_CLIENT;
 		}
 		
 		// Prints the response on the console.
@@ -143,14 +144,42 @@ public class RequestHandler implements Runnable {
 	private ResponseMessage processGETRequest(String request) {
 		if (Pattern.matches(getRequestAuthenticate, request)) {
 			System.out.println("[INFO] Authenticate user.");
-			
+			return (authenticateUser(request));
 		} else if (Pattern.matches(getRequestGetAllMessages, request)) {
 			System.out.println("[INFO] Get all messages.");
 			return (getAllMessages(request));
 		}
 		
 		System.out.println("[ERROR] No request type determined.");
-		return null;
+		return (BAD_REQUEST_FROM_CLIENT);
+	}
+	
+	/**
+	 * Authenticates a user with its username and password.
+	 * 
+	 * @param request The request to be processed (the GET and HTTP version must have been removed).
+	 * @return The response ready to be sent back to the client.
+	 */
+	private ResponseMessage authenticateUser(String request) {
+		int startPosition = request.indexOf("=") + 1;
+		int endPosition = request.indexOf("/", startPosition);
+		String userName = request.substring(startPosition, endPosition);
+		startPosition = request.indexOf("=", endPosition+1) + 1;
+		String userPassword = request.substring(startPosition, request.length());
+		
+		System.out.println("[INFO] The user to authenticate: " + userName + " and its password: " + userPassword);
+		
+		try {
+			if (!DBHandler.authenticateUser(userName, userPassword)) {
+				System.out.println("[WARNING] User already authenticated.");
+				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "The user was not successfuly authenticated."));
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+			return (SERVER_ERROR_MESSAGE);
+		}
+		
+		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The user was successfuly authenticated."));
 	}
 	
 	/**
@@ -163,10 +192,15 @@ public class RequestHandler implements Runnable {
 		int startPosition = request.indexOf("=") + 1;
 		String userName = request.substring(startPosition, request.length());
 		
-		// Verifies if the user is already authenticated.
-		if (!DBHandler.isUserAuthenticated(userName)) {
-			System.out.println("[WARNING] User not authenticated.");
-			return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
+		try {
+			// Verifies if the user is already authenticated.
+			if (!DBHandler.isUserAuthenticated(userName)) {
+				System.out.println("[WARNING] User not authenticated.");
+				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+			return (SERVER_ERROR_MESSAGE);
 		}
 		
 		// Fetches all the messages from the database.
@@ -227,7 +261,7 @@ public class RequestHandler implements Runnable {
 	}
 
 	
-	private void processPOSTRequest(String request) {
+	private ResponseMessage processPOSTRequest(String request) {
 		// TODO: Needs to be completed.
 		/*
 		 * for now just storeMessage
@@ -235,7 +269,7 @@ public class RequestHandler implements Runnable {
 		 */
 		storeMessage(request);
 
-
+		return (BAD_REQUEST_FROM_CLIENT);
 	}
 
 	// TODO(mingju): format this nicely.
