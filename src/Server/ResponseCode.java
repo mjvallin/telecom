@@ -14,7 +14,9 @@ public enum ResponseCode {
 	OK,
 	NOT_FOUND,
 	CREATED,
-	ACCEPTED;
+	ACCEPTED,
+	UNAUTHORIZED,
+	INTERNAL_SERVER_ERROR;
 	
 	@Override
 	public String toString() {
@@ -27,6 +29,10 @@ public enum ResponseCode {
 			return ("201 Created");
 		case ACCEPTED:
 			return ("202 Accepted");
+		case UNAUTHORIZED:
+			return ("401 Unauthorized");
+		case INTERNAL_SERVER_ERROR:
+			return ("500 Internal Server Error");
 		default:
 			return ("");
 		}

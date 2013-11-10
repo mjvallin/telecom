@@ -32,10 +32,12 @@ public class RequestHandler implements Runnable {
 	private String optionRequestPattern = "[Oo][Pp][Tt][Ii][Oo][Nn][Ss].*";
 	private String usersRequestPattern = "[Uu][Ss][Ee][Rr][Ss]";
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
-	private String getRequestAuthenticate = "";
-	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Me][Ss][Ss][Aa][Gg][Ee][Ss].*";
+	private String getRequestAuthenticate = ".*[Aa][Uu][Tt][Hh][Ee][Nn][Tt][Ii][Cc][Aa][Tt][Ee].*[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd].*";
+	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private final int ASCII_SPACE_CHAR = 32;
 	private final int GET_REQUEST_START_POS = 4;
+	
+	private ResponseMessage SERVER_ERROR_MESSAGE = new ResponseMessage(ResponseCode.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN, "An error occured on the server while processing the request.");
 
 	/**
 	 * Constructor takes the socket for this request
@@ -73,9 +75,12 @@ public class RequestHandler implements Runnable {
 		// Get the request line of the HTTP request message
 		String requestLine = bufferedInput.readLine();
 		String request;
-		ResponseMessage response;
-
-		System.out.println("requestLine: " + requestLine);		
+		ResponseMessage response = null;
+		
+		// FIXME: this is only for testing purposes.
+		requestLine = "GET allmessages=nick HTTP/1.1";
+		
+		System.out.println("[INFO] The request is: " + requestLine);
 		
 		if (Pattern.matches(getRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a GET.");
@@ -89,20 +94,27 @@ public class RequestHandler implements Runnable {
 
 			
 			
-			// TODO(mingju): Client doesn't pick up this for some reason
-			//			     need to debug. My guess is AngularJS' problem again.
-			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF);
-			dataOutputStream.writeBytes("Content-Type: application/json" + CRLF);
-			JSONObject json = new JSONObject();
-			json.put("name", "valentine");
-			System.out.println(json);
-			dataOutputStream.writeBytes(json + CRLF + "\n");
+//			// TODO(mingju): Client doesn't pick up this for some reason
+//			//			     need to debug. My guess is AngularJS' problem again.
+//			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF);
+//			dataOutputStream.writeBytes("Content-Type: application/json" + CRLF);
+//			JSONObject json = new JSONObject();
+//			json.put("name", "valentine");
+//			System.out.println(json);
+//			dataOutputStream.writeBytes(json + CRLF + "\n");
 
 
 		} else {
 			throw new Exception("Cannot determine if the request type.");
 		}
+		
+		// Prints the response on the console.
+		String responseToSend = response.toString();
+		System.out.println("[INFO] Response sent to the client:\n" + responseToSend + "");
+		// Sends the response back to the client.
+		dataOutputStream.writeBytes(responseToSend);
 
+		// Closes all the open streams.
 		socketInputStream.close();
 		socketOutputStream.close();
 		this.socket.close();
@@ -118,24 +130,48 @@ public class RequestHandler implements Runnable {
 		int startPosition = headerLine.indexOf(ASCII_SPACE_CHAR);
 		int endPosition = headerLine.indexOf(ASCII_SPACE_CHAR, startPosition+1);
 		String request = headerLine.substring(startPosition, endPosition);
-		System.out.println("[INFO] The extracted request is =" + request);
+		System.out.println("[INFO] The extracted request is: " + request);
 		return (request);
 	}
 
-	
+	/**
+	 * Processes the GET request depending on its content.
+	 * 
+	 * @param request The request to be processed (the GET and HTTP version must have been removed).
+	 * @return The response ready to be sent back to the client.
+	 */
 	private ResponseMessage processGETRequest(String request) {
 		if (Pattern.matches(getRequestAuthenticate, request)) {
+			System.out.println("[INFO] Authenticate user.");
 			
 		} else if (Pattern.matches(getRequestGetAllMessages, request)) {
-			
+			System.out.println("[INFO] Get all messages.");
+			return (getAllMessages(request));
 		}
 		
+		System.out.println("[ERROR] No request type determined.");
 		return null;
 	}
 	
-	private String getAllMessages(String user) {
-		String allMessagesInJSON = DBHandler.getMessages(user);
-		return null;
+	/**
+	 * Gets all the messages from a user. The request must be of the form "allmessages=username".
+	 * 
+	 * @param request The request to be processed. Needs to be of the form "allmessages=username".
+	 * @return The response that will be sent back to the client.
+	 */
+	private ResponseMessage getAllMessages(String request) {
+		int startPosition = request.indexOf("=") + 1;
+		String userName = request.substring(startPosition, request.length());
+		
+		// Verifies if the user is already authenticated.
+		if (!DBHandler.isUserAuthenticated(userName)) {
+			System.out.println("[WARNING] User not authenticated.");
+			return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
+		}
+		
+		// Fetches all the messages from the database.
+		String allMessagesInJSON = DBHandler.getMessages(userName);
+		return (new ResponseMessage(ResponseCode.OK, ContentType.APPLICATION_JSON, allMessagesInJSON));
 	}
 
 	/**
@@ -192,7 +228,7 @@ public class RequestHandler implements Runnable {
 
 	
 	private void processPOSTRequest(String request) {
-
+		// TODO: Needs to be completed.
 		/*
 		 * for now just storeMessage
 		 * later on we will handle login request as well

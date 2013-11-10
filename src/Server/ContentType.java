@@ -11,13 +11,16 @@ package Server;
  *
  */
 public enum ContentType {
-	APPLICATION_JSON;
+	APPLICATION_JSON,
+	TEXT_PLAIN;
 	
 	@Override
 	public String toString() {
 		switch (this) {
 		case APPLICATION_JSON:
 			return ("application/json");
+		case TEXT_PLAIN:
+			return ("text/plain");
 		default:
 			return ("");
 		}
