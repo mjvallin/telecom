@@ -32,7 +32,8 @@ public class RequestHandler implements Runnable {
 	private String optionRequestPattern = "[Oo][Pp][Tt][Ii][Oo][Nn][Ss].*";
 	private String usersRequestPattern = "[Uu][Ss][Ee][Rr][Ss]";
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
-	private String singleDigitNumberPattern = "[0123456789]";
+	private String getRequestAuthenticate = "";
+	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Me][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private final int ASCII_SPACE_CHAR = 32;
 	private final int GET_REQUEST_START_POS = 4;
 
@@ -72,13 +73,14 @@ public class RequestHandler implements Runnable {
 		// Get the request line of the HTTP request message
 		String requestLine = bufferedInput.readLine();
 		String request;
+		ResponseMessage response;
 
-		System.out.println("requestLine: " + requestLine);
+		System.out.println("requestLine: " + requestLine);		
 		
 		if (Pattern.matches(getRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a GET.");
 			request = extractContentFromGETRequest(requestLine);
-			processGETRequest(request);
+			response = processGETRequest(request);
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
 			String requestBody = extractBodyFromPOSTRequest(bufferedInput);
@@ -114,17 +116,26 @@ public class RequestHandler implements Runnable {
 	 */
 	private String extractContentFromGETRequest(String headerLine) {
 		int startPosition = headerLine.indexOf(ASCII_SPACE_CHAR);
-		System.out.println("Matcher ending position: " + startPosition);
 		int endPosition = headerLine.indexOf(ASCII_SPACE_CHAR, startPosition+1);
 		String request = headerLine.substring(startPosition, endPosition);
 		System.out.println("[INFO] The extracted request is =" + request);
 		return (request);
 	}
 
-	private void processGETRequest(String request) {
-		if (Pattern.matches(usersRequestPattern, request)) {
-
+	
+	private ResponseMessage processGETRequest(String request) {
+		if (Pattern.matches(getRequestAuthenticate, request)) {
+			
+		} else if (Pattern.matches(getRequestGetAllMessages, request)) {
+			
 		}
+		
+		return null;
+	}
+	
+	private String getAllMessages(String user) {
+		String allMessagesInJSON = DBHandler.getMessages(user);
+		return null;
 	}
 
 	/**
@@ -135,7 +146,7 @@ public class RequestHandler implements Runnable {
 	 */
 	private int extractContentLength(String line) {
 		// Fetches the position at which the Content-Length is defined.
-		Pattern singleDigit = Pattern.compile(singleDigitNumberPattern);
+		Pattern singleDigit = Pattern.compile("\\d");
 		Matcher matcher = singleDigit.matcher(line);
 		
 		if (matcher.find()) {
