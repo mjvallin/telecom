@@ -18,6 +18,12 @@ public class DBHandler {
 
 	public static final String DB_AUTH_FILE = "logins";
 
+	/**
+	 * Stores a message for a specific user in the database.
+	 * 
+	 * @param m
+	 *            The message to be stored.
+	 */
 	public static void storeMessage(Message m) {
 		String filename = m.to + DB_FILE_TYPE;
 		String path = DB_FOLDER + filename;
@@ -42,6 +48,13 @@ public class DBHandler {
 		}
 	}
 
+	/**
+	 * Returns all the messages for a specific user in a JSON formatted String.
+	 * 
+	 * @param username
+	 *            The user that we will fetch all the messages.
+	 * @return All the JSON formatted messages.
+	 */
 	public static String getMessages(String username) {
 		String filename = username + DB_FILE_TYPE;
 		String path = DB_FOLDER + filename;
@@ -83,9 +96,24 @@ public class DBHandler {
 	 * @throws Exception
 	 */
 	public static boolean isUserAuthenticated(String username) throws Exception {
-		// TODO: it needs to be filled.
-
+		// TODO: To be filled.
 		return (true);
+	}
+
+	/**
+	 * Gets all the fetched messages from a specific user. Each messages are
+	 * assigned a UID (Unique IDentifier that is incremented from 1 to
+	 * "infinity".
+	 * 
+	 * @param username
+	 *            The user to which we need to verify if there are any new
+	 *            messages.
+	 * @return The JSON formatted list of new messages and NULL if there is
+	 *         nothing that the User has not already fetched.
+	 */
+	public static String getLastMessages(String username) {
+		// TODO: To be filled.
+		return (null);
 	}
 
 	/**
@@ -131,6 +159,11 @@ public class DBHandler {
 		return foundMatch;
 	}
 
+	/**
+	 * Returns all the users present in the database.
+	 * 
+	 * @return The JSON formatted String that contains the list of all users.
+	 */
 	public static String getallUsernames() {
 		File f = new File(DB_FOLDER + DB_AUTH_FILE + DB_FILE_TYPE);
 		FileReader fReader;
@@ -165,22 +198,22 @@ public class DBHandler {
 		return usernamesInJSON.toString();
 	}
 
-//	public static void main(String[] args) {
-//		DBHandler db = new DBHandler();
-//
-//		/*
-//		 * Message mOne = new Message("nadim", "nick",
-//		 * "Hey man whats going on doodsky?"); Message mTwo = new Message("js",
-//		 * "nick", "you my boy");
-//		 * 
-//		 * 
-//		 * storeMessage(mOne); storeMessage(mTwo);
-//		 * 
-//		 * String s = getMessages("nick"); System.out.println(s);
-//		 */
-//
-//		 System.out.println(authenticateUser("nick", "123456"));
-//		 System.out.println(authenticateUser("nick", "1266656"));
-//		 System.out.println(getallUsernames());
-//	}
+	// public static void main(String[] args) {
+	// DBHandler db = new DBHandler();
+	//
+	// /*
+	// * Message mOne = new Message("nadim", "nick",
+	// * "Hey man whats going on doodsky?"); Message mTwo = new Message("js",
+	// * "nick", "you my boy");
+	// *
+	// *
+	// * storeMessage(mOne); storeMessage(mTwo);
+	// *
+	// * String s = getMessages("nick"); System.out.println(s);
+	// */
+	//
+	// System.out.println(authenticateUser("nick", "123456"));
+	// System.out.println(authenticateUser("nick", "1266656"));
+	// System.out.println(getallUsernames());
+	// }
 }

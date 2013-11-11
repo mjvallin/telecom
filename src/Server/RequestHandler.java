@@ -26,11 +26,10 @@ public class RequestHandler implements Runnable {
 	private Socket socket;
 	private String getRequestPattern = "[Gg][Ee][Tt].*";
 	private String postRequestPattern = "[Pp][Oo][Ss][Tt].*";
-	private String optionRequestPattern = "[Oo][Pp][Tt][Ii][Oo][Nn][Ss].*";
-	private String usersRequestPattern = "[Uu][Ss][Ee][Rr][Ss]";
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
 	private String getRequestAuthenticate = ".*[Aa][Uu][Tt][Hh][Ee][Nn][Tt][Ii][Cc][Aa][Tt][Ee].*[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd].*";
 	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
+	private String getRequestGetLastMessages = ".*[Ll][Aa][Ss][Tt][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private final int ASCII_SPACE_CHAR = 32;
 	
 	/**
@@ -72,7 +71,8 @@ public class RequestHandler implements Runnable {
 		
 		// FIXME: this is only for testing purposes.
 		//requestLine = "GET allmessages=nick HTTP/1.1";
-		requestLine = "GET authenticate=nick/password=userPassword HTTP/1.1";
+		//requestLine = "GET authenticate=nick/password=userPassword HTTP/1.1";
+		requestLine = "GET lastmessages=nick HTTP/1.1";
 		
 		System.out.println("[INFO] The request is: " + requestLine);
 		
@@ -94,7 +94,6 @@ public class RequestHandler implements Runnable {
 //			json.put("name", "valentine");
 //			System.out.println(json);
 //			dataOutputStream.writeBytes(json + CRLF + "\n");
-
 
 		} else {
 			response = ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT);
@@ -139,10 +138,50 @@ public class RequestHandler implements Runnable {
 		} else if (Pattern.matches(getRequestGetAllMessages, request)) {
 			System.out.println("[INFO] Get all messages.");
 			return (getAllMessages(request));
+		} else if (Pattern.matches(getRequestGetLastMessages, request)) {
+			System.out.println("[INFO] Get last messages.");
+			return (getLastMessages(request));
 		}
 		
 		System.out.println("[ERROR] No request type determined.");
 		return (ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT));
+	}
+	
+	/**
+	 * Returns the last messages that were fetched a specific user.
+	 * 
+	 * @param request The request to be processed (the GET and HTTP version must have been removed).
+	 * @return The response ready to be sent back to the client.
+	 */
+	private ResponseMessage getLastMessages(String request) {
+		int startPosition = request.indexOf("=") + 1;
+		
+		// Verifies that it has find the position of the symbol.
+		if (startPosition < 0) {
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
+		
+		String userName = request.substring(startPosition, request.length());
+		
+		try {
+			// Verifies if the user is already authenticated.
+			if (!DBHandler.isUserAuthenticated(userName)) {
+				System.out.println("[WARNING] User not authenticated.");
+				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
+		
+		// Fetches all the messages from the database.
+		String lastMessagesInJSON = DBHandler.getLastMessages(userName);
+		if (lastMessagesInJSON != null) {
+			return (new ResponseMessage(ResponseCode.OK, ContentType.APPLICATION_JSON, lastMessagesInJSON));
+		} else {
+			return (new ResponseMessage(ResponseCode.NO_CONTENT, ContentType.TEXT_PLAIN, "The user has no new messages."));
+		}
+		
 	}
 	
 	/**

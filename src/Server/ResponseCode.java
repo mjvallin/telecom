@@ -17,7 +17,8 @@ public enum ResponseCode {
 	ACCEPTED,
 	UNAUTHORIZED,
 	INTERNAL_SERVER_ERROR,
-	BAD_REQUEST;
+	BAD_REQUEST,
+	NO_CONTENT;
 	
 	@Override
 	public String toString() {
@@ -36,6 +37,8 @@ public enum ResponseCode {
 			return ("500 Internal Server Error");
 		case BAD_REQUEST:
 			return ("400 Bad Request");
+		case NO_CONTENT:
+			return ("204 No Content");
 		default:
 			return ("");
 		}
