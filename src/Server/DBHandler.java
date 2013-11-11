@@ -165,22 +165,22 @@ public class DBHandler {
 		return usernamesInJSON.toString();
 	}
 
-	public static void main(String[] args) {
-		DBHandler db = new DBHandler();
-
-		/*
-		 * Message mOne = new Message("nadim", "nick",
-		 * "Hey man whats going on doodsky?"); Message mTwo = new Message("js",
-		 * "nick", "you my boy");
-		 * 
-		 * 
-		 * storeMessage(mOne); storeMessage(mTwo);
-		 * 
-		 * String s = getMessages("nick"); System.out.println(s);
-		 */
-
-		// System.out.println(authenticateUser("nick", "123456"));
-		// System.out.println(authenticateUser("nick", "1266656"));
-		// System.out.println(getallUsernames());
-	}
+//	public static void main(String[] args) {
+//		DBHandler db = new DBHandler();
+//
+//		/*
+//		 * Message mOne = new Message("nadim", "nick",
+//		 * "Hey man whats going on doodsky?"); Message mTwo = new Message("js",
+//		 * "nick", "you my boy");
+//		 * 
+//		 * 
+//		 * storeMessage(mOne); storeMessage(mTwo);
+//		 * 
+//		 * String s = getMessages("nick"); System.out.println(s);
+//		 */
+//
+//		 System.out.println(authenticateUser("nick", "123456"));
+//		 System.out.println(authenticateUser("nick", "1266656"));
+//		 System.out.println(getallUsernames());
+//	}
 }

@@ -21,6 +21,23 @@ public class ResponseMessage {
 	private ResponseCode statusCode;
 	private ContentType contentType;
 	private String content;
+	
+	/**
+	 * ResponseMessage's Factory.
+	 * 
+	 * @param response The DefaultResponse message that will be instantiated.
+	 * @return The generated message.
+	 */
+	public static ResponseMessage responseMessageFactory(DefaultResponses response) {
+		switch(response) {
+		case SERVER_ERROR_MESSAGE:
+			return (new ResponseMessage(ResponseCode.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN, "An error occured on the server while processing the request."));
+		case BAD_REQUEST_FROM_CLIENT:
+			return (new ResponseMessage(ResponseCode.BAD_REQUEST, ContentType.TEXT_PLAIN, "The issued request is not properly formatted and the server cannot process it."));
+		default:
+			return (null);
+		}
+	}
 
 	public ResponseMessage(ResponseCode statusCode, ContentType contentType, String content) {
 		this.statusCode = statusCode;

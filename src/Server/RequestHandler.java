@@ -2,15 +2,12 @@ package Server;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.json.JSONObject;
 
 /**
  * Handles all the request made by the client.
@@ -35,9 +32,6 @@ public class RequestHandler implements Runnable {
 	private String getRequestAuthenticate = ".*[Aa][Uu][Tt][Hh][Ee][Nn][Tt][Ii][Cc][Aa][Tt][Ee].*[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd].*";
 	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private final int ASCII_SPACE_CHAR = 32;
-	
-	private ResponseMessage SERVER_ERROR_MESSAGE = new ResponseMessage(ResponseCode.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN, "An error occured on the server while processing the request.");
-	private ResponseMessage BAD_REQUEST_FROM_CLIENT = new ResponseMessage(ResponseCode.BAD_REQUEST, ContentType.TEXT_PLAIN, "The issued request is not properly formatted and the server cannot process it.");
 	
 	/**
 	 * Constructor takes the socket for this request
@@ -64,8 +58,7 @@ public class RequestHandler implements Runnable {
 	 * @throws Exception
 	 */
 	private void processRequest() throws Exception {
-		InputStreamReader socketInputStream = new InputStreamReader(
-				this.socket.getInputStream());
+		InputStreamReader socketInputStream = new InputStreamReader(this.socket.getInputStream());
 		OutputStream socketOutputStream = this.socket.getOutputStream();
 
 		// Set up input stream filters
@@ -93,8 +86,6 @@ public class RequestHandler implements Runnable {
 			System.out.println("[INFO] The extracted body is [" + requestBody + "]");
 			processPOSTRequest(requestBody);
 
-			
-			
 //			// TODO(mingju): Client doesn't pick up this for some reason
 //			//			     need to debug. My guess is AngularJS' problem again.
 //			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF);
@@ -106,7 +97,7 @@ public class RequestHandler implements Runnable {
 
 
 		} else {
-			response = BAD_REQUEST_FROM_CLIENT;
+			response = ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT);
 		}
 		
 		// Prints the response on the console.
@@ -151,7 +142,7 @@ public class RequestHandler implements Runnable {
 		}
 		
 		System.out.println("[ERROR] No request type determined.");
-		return (BAD_REQUEST_FROM_CLIENT);
+		return (ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT));
 	}
 	
 	/**
@@ -176,7 +167,7 @@ public class RequestHandler implements Runnable {
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
-			return (SERVER_ERROR_MESSAGE);
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
 		}
 		
 		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The user was successfuly authenticated."));
@@ -200,7 +191,7 @@ public class RequestHandler implements Runnable {
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
-			return (SERVER_ERROR_MESSAGE);
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
 		}
 		
 		// Fetches all the messages from the database.
@@ -269,7 +260,7 @@ public class RequestHandler implements Runnable {
 		 */
 		storeMessage(request);
 
-		return (BAD_REQUEST_FROM_CLIENT);
+		return (ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT));
 	}
 
 	// TODO(mingju): format this nicely.
