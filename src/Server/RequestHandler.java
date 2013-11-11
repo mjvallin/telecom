@@ -154,8 +154,18 @@ public class RequestHandler implements Runnable {
 	private ResponseMessage authenticateUser(String request) {
 		int startPosition = request.indexOf("=") + 1;
 		int endPosition = request.indexOf("/", startPosition);
+		
+		// Verifies that it has find the position of the two symbols.
+		if (startPosition < 0 || endPosition < 0) {
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
+		
 		String userName = request.substring(startPosition, endPosition);
 		startPosition = request.indexOf("=", endPosition+1) + 1;
+		// Verifies that it has find the position of the symbol.
+		if (startPosition < 0) {
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
 		String userPassword = request.substring(startPosition, request.length());
 		
 		System.out.println("[INFO] The user to authenticate: " + userName + " and its password: " + userPassword);
@@ -181,6 +191,12 @@ public class RequestHandler implements Runnable {
 	 */
 	private ResponseMessage getAllMessages(String request) {
 		int startPosition = request.indexOf("=") + 1;
+		
+		// Verifies that it has find the position of the symbol.
+		if (startPosition < 0) {
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
+		
 		String userName = request.substring(startPosition, request.length());
 		
 		try {
@@ -251,7 +267,6 @@ public class RequestHandler implements Runnable {
 		return (new String(readBody));
 	}
 
-	
 	private ResponseMessage processPOSTRequest(String request) {
 		// TODO: Needs to be completed.
 		/*
