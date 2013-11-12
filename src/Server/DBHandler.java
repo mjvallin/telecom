@@ -33,19 +33,32 @@ public class DBHandler {
 		try {
 			FileWriter fr = new FileWriter(f, true);
 			PrintWriter pr = new PrintWriter(fr);
+			
+			// Sets the UID of the message to be stored.
+			String nextUid = getNextUid(m.to);
+			m.setUid(nextUid);
 
 			// write the json string of the message to the file
 			pr.println(m.getJSONString());
 
 			fr.close();
 			pr.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Gets the next UID that will be used for the next message to be stored.
+	 * 
+	 * @param user
+	 *            The user that we want to know what's his next UID.
+	 * @return The next UID.
+	 */
+	private static String getNextUid(String user) {
+		// TODO: To be filled.
+		return "-1";
 	}
 
 	/**

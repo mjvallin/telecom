@@ -72,7 +72,7 @@ public class RequestHandler implements Runnable {
 		// FIXME: this is only for testing purposes.
 		//requestLine = "GET allmessages=nick HTTP/1.1";
 		//requestLine = "GET authenticate=nick/password=userPassword HTTP/1.1";
-		requestLine = "GET lastmessages=nick HTTP/1.1";
+		//requestLine = "GET lastmessages=nick HTTP/1.1";
 		
 		System.out.println("[INFO] The request is: " + requestLine);
 		
@@ -84,7 +84,7 @@ public class RequestHandler implements Runnable {
 			System.out.println("[INFO] The received request is a POST.");
 			String requestBody = extractBodyFromPOSTRequest(bufferedInput);
 			System.out.println("[INFO] The extracted body is [" + requestBody + "]");
-			processPOSTRequest(requestBody);
+			response = processPOSTRequest(requestBody);
 
 //			// TODO(mingju): Client doesn't pick up this for some reason
 //			//			     need to debug. My guess is AngularJS' problem again.
