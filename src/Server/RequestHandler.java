@@ -149,50 +149,42 @@ public class RequestHandler implements Runnable {
 	 * @return The response ready to be sent back to the client.
 	 */
 	private ResponseMessage getLastMessages(String request) {
-		int startPosition = request.indexOf("=") + 1;
-		int endPosition = request.indexOf(AMP, startPosition);
-		
-		// Verifies that it has find the position of the two symbols.
-		if (startPosition < 0 || endPosition < 0) {
-			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-		}
-		
-		String userName = request.substring(startPosition, endPosition);
-		startPosition = request.indexOf(AMP, endPosition+1) + 1;
-		// Verifies that it has find the position of the symbol.
-		if (startPosition < 0) {
-			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-		}
-		String lastUidReceived = request.substring(startPosition, request.length());
-		
-//		int startPosition = request.indexOf("=") + 1;
-//		
-//		// Verifies that it has find the position of the symbol.
-//		if (startPosition < 0) {
-//			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-//		}
-//		
-//		String userName = request.substring(startPosition, request.length());
-		
 		try {
+			int startPosition = request.indexOf("=") + 1;
+			int endPosition = request.indexOf(AMP, startPosition);
+			
+			// Verifies that it has find the position of the two symbols.
+			if (startPosition < 0 || endPosition < 0) {
+				throw new RuntimeException("Either the start position of the end position is negative.");
+			}
+			
+			String userName = request.substring(startPosition, endPosition);
+			startPosition = request.indexOf(AMP, endPosition+1) + 1;
+			// Verifies that it has find the position of the symbol.
+			if (startPosition < 0) {
+				throw new RuntimeException("The start position is negative.");
+			}
+			
+			String lastUidReceived = request.substring(startPosition, request.length());
+			int lastUid = Integer.parseInt(lastUidReceived);
+		
 			// Verifies if the user is already authenticated.
 			if (!DBHandler.isUserAuthenticated(userName)) {
 				System.out.println("[WARNING] User not authenticated.");
 				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
 			}
+			
+			// Fetches all the messages from the database.
+			String lastMessagesInJSON = DBHandler.getLastMessages(userName, lastUid);
+			if (lastMessagesInJSON != null) {
+				return (new ResponseMessage(ResponseCode.OK, ContentType.APPLICATION_JSON, lastMessagesInJSON));
+			} else {
+				return (new ResponseMessage(ResponseCode.NO_CONTENT, ContentType.TEXT_PLAIN, "The user has no new messages."));
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
 		}
-		
-		// Fetches all the messages from the database.
-		String lastMessagesInJSON = DBHandler.getLastMessages(userName);
-		if (lastMessagesInJSON != null) {
-			return (new ResponseMessage(ResponseCode.OK, ContentType.APPLICATION_JSON, lastMessagesInJSON));
-		} else {
-			return (new ResponseMessage(ResponseCode.NO_CONTENT, ContentType.TEXT_PLAIN, "The user has no new messages."));
-		}
-		
 	}
 	
 	/**
