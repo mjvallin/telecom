@@ -32,7 +32,6 @@ public class RequestHandler implements Runnable {
 	private String postLoginPattern = ".*[Ll][Oo][Gg][Ii].*";
 	private String postStoreMessagePattern = ".*[Ss][Ee][Nn][Dd][Mm][Ee][Ss][Ss][Aa][Gg][Ee].*";
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
-	private String getRequestAuthenticate = ".*[Aa][Uu][Tt][Hh][Ee][Nn][Tt][Ii][Cc][Aa][Tt][Ee].*[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd].*";
 	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private String getRequestGetLastMessages = ".*[Ll][Aa][Ss][Tt][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private final int ASCII_SPACE_CHAR = 32;
@@ -88,7 +87,8 @@ public class RequestHandler implements Runnable {
 			response = processGETRequest(request);
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
-			response = processPOSTRequest(requestLine, bufferedInput);
+			request = extractBodyFromPOSTRequest(bufferedInput);
+			response = processPOSTRequest(requestLine, request);
 		} else {
 			response = ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT);
 		}
@@ -126,10 +126,7 @@ public class RequestHandler implements Runnable {
 	 * @return The response ready to be sent back to the client.
 	 */
 	private ResponseMessage processGETRequest(String request) {
-		if (Pattern.matches(getRequestAuthenticate, request)) {
-			System.out.println("[INFO] Authenticate user.");
-			return (authenticateUser(request));
-		} else if (Pattern.matches(getRequestGetAllMessages, request)) {
+		if (Pattern.matches(getRequestGetAllMessages, request)) {
 			System.out.println("[INFO] Get all messages.");
 			return (getAllMessages(request));
 		} else if (Pattern.matches(getRequestGetLastMessages, request)) {
@@ -351,15 +348,7 @@ public class RequestHandler implements Runnable {
 		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The message was stored succesfully."));
 	}
 	
-	private ResponseMessage processPOSTRequest(String requestHeader, BufferedReader bufferedInput) {
-		String requestBody;
-		try {
-			requestBody = extractBodyFromPOSTRequest(bufferedInput);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-		}
-		
+	private ResponseMessage processPOSTRequest(String requestHeader, String requestBody) {		
 		if (Pattern.matches(postLoginPattern, requestHeader)) {
 			System.out.println("[INFO] Login user.");
 			return (authenticateUser(requestBody));
