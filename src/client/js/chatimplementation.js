@@ -67,11 +67,12 @@ function Chatbox($scope, $http, $resource) {
 			url: 'http://localhost:1234/login', 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			//data : {'from': 'i.nadim', 'to': 'nick', 'message': 'hi bro'}			
-			data: 'username=' + username + "password=" + password ,
+			data: 'username=' + username + "&password=" + password ,
 			//TODO(mingju): this is a bit ugly. Parse from JSON String is better
 		}).
 		  success(function(data, status) {
 			$scope.users = username;
+			$scope.loggedin = true;
 			alert("Logged in, THANK YOU");
 		  }).
 		  error(function(data, status) {
