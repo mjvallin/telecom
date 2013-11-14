@@ -112,7 +112,7 @@ public class RequestHandler implements Runnable {
 	}
 
 	/**
-	 * Extracts the content of a GET request.
+	 * Extracts the content of a GET request. 
 	 *
 	 * @param headerLine The header line to be parsed.
 	 * @return The extracted content from the GET request.
