@@ -82,7 +82,46 @@ function Chatbox($scope, $http, $resource) {
 		});
 
 	}
-	
+	$scope.getAllMessages = function() {
+		
+		$user = "nick";
+		
+		$http({
+			method: "GET",
+			url: 'http://localhost:1234/allmessages=nick', 
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+		}).
+		  success(function(data, status) {
+			$scope.status = status;
+			$scope.messages = data;
+			alert(data);
+		  }).
+		  error(function(data, status) {
+			$scope.data = data || "Request failed";
+			$scope.status = status;
+			alert(data);
+			//alert($scope.data);
+		});
+		/*
+		$http({
+			method: "POST",
+			url: 'http://localhost:8888/', 
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			//data : {'from': 'i.nadim', 'to': 'nick', 'message': 'hi bro'}			
+			data: 'username=' + username + "password=" + password ,
+		}).
+		  success(function(data, status) {
+			//$scope.users = username;
+			$scope.messages = angular.fromJson(data);
+			alert("asdasd");
+		  }).
+		  error(function(data, status) {
+			$scope.data = data || "Request failed";
+			$scope.status = status;
+			alert(status);
+			//alert($scope.data);
+		});*/
+	}
   	$scope.updateModel = function(method, url) {
     	$scope.method = method;
     	$scope.url = url;
