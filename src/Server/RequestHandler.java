@@ -298,11 +298,20 @@ public class RequestHandler implements Runnable {
 		return (new String(readBody));
 	}
 
-
+	/**
+	 * Process the POST request which is to store a message for a specific user on the database.
+	 * 
+	 * @param request The request to be processed.
+	 * @return The response that will be sent back to the client.
+	 */
 	private ResponseMessage processPOSTRequest(String request) {
 		System.out.println("[INFO] Processing POST request.");
 		
-		Message messageToStore = storeMessage(request);
+		Message messageToStore = createMessageToBeStored(request);
+		// Handles if a problem occurred when creating the Message.
+		if (messageToStore == null) {
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
 		
 		try {
 			// Verifies if the user is already authenticated.
@@ -320,27 +329,36 @@ public class RequestHandler implements Runnable {
 		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The message was stored succesfully."));
 	}
 
-	// TODO(mingju): format this nicely.
-	//				 parse from a JSON String
-	private Message storeMessage(String request) {
-		String[] contents = request.split("\\&");
-		String from = "", to = "", content = "";
-		for(int i = 0; i < contents.length; ++i) {
-			String[] tmp = contents[i].split("\\=");
-
-			if(tmp[0].equals("from")) {
-				from = tmp[1];
-			} else if(tmp[0].equals("to")) {
-				to = tmp[1];
-			} else if(tmp[0].equals("message")) {
-				//TODO(mingju): @Nadim, gimme the name of the textarea here
-				// assume content is nicely formatted
-				content = tmp[1].replace('+', ' ');
+	/**
+	 * Creates the Message object that will be stored in the database.
+	 * 
+	 * @param request The request containing the message to be stored.
+	 * @return The message to be stored in the database.
+	 */
+	private Message createMessageToBeStored(String request) {
+		try {
+			String[] contents = request.split("\\&");
+			String from = "", to = "", content = "";
+			for(int i = 0; i < contents.length; ++i) {
+				String[] tmp = contents[i].split("\\=");
+	
+				if(tmp[0].equals("from")) {
+					from = tmp[1];
+				} else if(tmp[0].equals("to")) {
+					to = tmp[1];
+				} else if(tmp[0].equals("message")) {
+					//TODO(mingju): @Nadim, gimme the name of the textarea here
+					// assume content is nicely formatted
+					content = tmp[1].replace('+', ' ');
+				}
 			}
+			
+			System.out.println("[INFO] Storing message: from=" + from + " to=" + to + " message=" + content);
+			
+			return (new Message(from, to, content));
+		} catch(Exception e) {
+			e.printStackTrace();
+			return (null);
 		}
-
-		System.out.println("[INFO] Storing message: from=" + from + " to=" + to + " message=" + content);
-		
-		return (new Message(from, to, content));
 	}
 }
