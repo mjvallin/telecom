@@ -163,12 +163,6 @@ public class RequestHandler implements Runnable {
 			System.out.println("[INFO] The last received uid is=" + lastUidReceived);
 			
 			int lastUid = Integer.parseInt(lastUidReceived);
-		
-			// Verifies if the user is already authenticated.
-			if (!DBHandler.isUserAuthenticated(userName)) {
-				System.out.println("[WARNING] User not authenticated.");
-				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
-			}
 			
 			// Fetches all the messages from the database.
 			String lastMessagesInJSON = DBHandler.getLastMessages(userName, lastUid);
@@ -231,17 +225,6 @@ public class RequestHandler implements Runnable {
 		}
 		
 		String userName = request.substring(startPosition, request.length());
-		
-		try {
-			// Verifies if the user is already authenticated.
-			if (!DBHandler.isUserAuthenticated(userName)) {
-				System.out.println("[WARNING] User not authenticated.");
-				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
-			}
-		} catch(Exception e) {
-			e.printStackTrace();
-			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-		}
 		
 		// Fetches all the messages from the database.
 		String allMessagesInJSON = DBHandler.getMessages(userName);
@@ -315,13 +298,7 @@ public class RequestHandler implements Runnable {
 			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
 		}
 		
-		try {
-			// Verifies if the user is already authenticated.
-			if (!DBHandler.isUserAuthenticated(messageToStore.from)) {
-				System.out.println("[WARNING] User not authenticated.");
-				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
-			}
-			
+		try {			
 			DBHandler.storeMessage(messageToStore);
 		} catch(Exception e) {
 			e.printStackTrace();

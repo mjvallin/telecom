@@ -134,19 +134,6 @@ public class DBHandler {
 	}
 
 	/**
-	 * Will verify if the user has been authenticated on the server.
-	 * 
-	 * @param username
-	 *            The user to verify.
-	 * @return True if the user is already authenticated, and false otherwise.
-	 * @throws Exception
-	 */
-	public static boolean isUserAuthenticated(String username) throws Exception {
-		// TODO: To be filled.
-		return (true);
-	}
-
-	/**
 	 * Gets all the fetched messages from a specific user. Each messages are
 	 * assigned a UID (Unique IDentifier that is incremented from 1 to
 	 * "infinity".

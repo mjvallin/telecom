@@ -1,6 +1,7 @@
 <form name="input" action="http://localhost:1234/login" method="post">
-From <input type="text" name="username">
-To<input type="text" name="password">
+From<input type="text" name="from">
+To<input type="text" name="to">
+Message<input type="text" name="message">
 
 <input type="submit" value="Submit">
 </form>
