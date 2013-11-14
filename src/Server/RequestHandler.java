@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
  *
  */
 public class RequestHandler implements Runnable {
-	final String CRLF = "\r\n";
-	final String SP = " ";
+	private final String CRLF = "\r\n";
+	private final String SP = " ";
 
 	private Socket socket;
 	private String getRequestPattern = "[Gg][Ee][Tt].*";
@@ -85,16 +85,6 @@ public class RequestHandler implements Runnable {
 			String requestBody = extractBodyFromPOSTRequest(bufferedInput);
 			System.out.println("[INFO] The extracted body is [" + requestBody + "]");
 			response = processPOSTRequest(requestBody);
-
-//			// TODO(mingju): Client doesn't pick up this for some reason
-//			//			     need to debug. My guess is AngularJS' problem again.
-//			dataOutputStream.writeBytes("HTTP/1.1 200 OK" + CRLF);
-//			dataOutputStream.writeBytes("Content-Type: application/json" + CRLF);
-//			JSONObject json = new JSONObject();
-//			json.put("name", "valentine");
-//			System.out.println(json);
-//			dataOutputStream.writeBytes(json + CRLF + "\n");
-
 		} else {
 			response = ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT);
 		}
