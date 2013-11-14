@@ -23,30 +23,26 @@ public class DBHandler {
 	 * 
 	 * @param m
 	 *            The message to be stored.
+	 * @throws Exception 
 	 */
-	public static void storeMessage(Message m) {
+	public static void storeMessage(Message m) throws Exception {
 		String filename = m.to + DB_FILE_TYPE;
 		String path = DB_FOLDER + filename;
 
 		File f = new File(path);
 
-		try {
-			FileWriter fr = new FileWriter(f, true);
-			PrintWriter pr = new PrintWriter(fr);
-			
-			// Sets the UID of the message to be stored.
-			String nextUid = getNextUid(m.to);
-			m.setUid(nextUid);
+		FileWriter fr = new FileWriter(f, true);
+		PrintWriter pr = new PrintWriter(fr);
 
-			// write the json string of the message to the file
-			pr.println(m.getJSONString());
+		// Sets the UID of the message to be stored.
+		String nextUid = getNextUid(m.to);
+		m.setUid(nextUid);
 
-			fr.close();
-			pr.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// write the json string of the message to the file
+		pr.println(m.getJSONString());
+
+		fr.close();
+		pr.close();
 	}
 
 	/**

@@ -283,7 +283,7 @@ public class RequestHandler implements Runnable {
 	 * @throws IOException 
 	 */
 	private String extractBodyFromPOSTRequest(BufferedReader bufferedInput) throws IOException {
-		System.out.println("[INFO] Processing POST request.");
+		System.out.println("[INFO] Extracting body from POST request.");
 
 		// Go through the request's header so we can reach the body.
 		int contentLength = 0;
@@ -306,20 +306,31 @@ public class RequestHandler implements Runnable {
 		return (new String(readBody));
 	}
 
-	private ResponseMessage processPOSTRequest(String request) {
-		// TODO: Needs to be completed.
-		/*
-		 * for now just storeMessage
-		 * later on we will handle login request as well
-		 */
-		storeMessage(request);
 
-		return (ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT));
+	private ResponseMessage processPOSTRequest(String request) {
+		System.out.println("[INFO] Processing POST request.");
+		
+		Message messageToStore = storeMessage(request);
+		
+		try {
+			// Verifies if the user is already authenticated.
+			if (!DBHandler.isUserAuthenticated(messageToStore.from)) {
+				System.out.println("[WARNING] User not authenticated.");
+				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "User is not authenticated."));
+			}
+			
+			DBHandler.storeMessage(messageToStore);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
+
+		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The message was stored succesfully."));
 	}
 
 	// TODO(mingju): format this nicely.
 	//				 parse from a JSON String
-	private void storeMessage(String request) {
+	private Message storeMessage(String request) {
 		String[] contents = request.split("\\&");
 		String from = "", to = "", content = "";
 		for(int i = 0; i < contents.length; ++i) {
@@ -338,6 +349,6 @@ public class RequestHandler implements Runnable {
 
 		System.out.println("[INFO] Storing message: from=" + from + " to=" + to + " message=" + content);
 		
-		DBHandler.storeMessage(new Message(from, to, content));
+		return (new Message(from, to, content));
 	}
 }
