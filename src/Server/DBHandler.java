@@ -51,8 +51,9 @@ public class DBHandler {
 	 * @param user
 	 *            The user that we want to know what's his next UID.
 	 * @return The next UID.
+	 * @throws JSONException 
 	 */
-	private static int getNextUid(String user) {
+	private static int getNextUid(String user) throws JSONException {
 		String filename = user + DB_FILE_TYPE;
 		String path = DB_FOLDER + filename;
 
