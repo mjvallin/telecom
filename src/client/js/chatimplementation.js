@@ -33,13 +33,13 @@ function Chatbox($scope, $http, $resource) {
 		$scope.code = null;
 		$scope.response = null;
 		var text  = document.getElementById('messageBox').value;
-		var fromUser = document.getElementById('fromUser').value;
+		var fromUser = $scope.user;
 		var toUser = document.getElementById('toUser').value;
 		//alert("from: " + fromUser + ", to: " + toUser + "\n content: " + text);
 	
 		$http({
 			method: "POST",
-			url: 'http://localhost:1234/', 
+			url: 'http://localhost:1234/sendmessage', 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			//data : {'from': 'i.nadim', 'to': 'nick', 'message': 'hi bro'}			
 			data: 'from=' + fromUser + "&to=" + toUser + "&message=" + text,
@@ -55,6 +55,7 @@ function Chatbox($scope, $http, $resource) {
 			$scope.status = status;
 			//alert($scope.data);
 		});
+		  $scope.getAllMessages($scope.user);
 	};
 
 	$scope.login = function(){

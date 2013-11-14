@@ -54,11 +54,11 @@
 				<h2>
 					Send Message {{status}} {{data}}
 				</h2>
-						From: <input id = "fromUser" class="form-control counted" type="text" name="from">
+						
 						To: <input id = "toUser" class="form-control counted" type="text" name="to">                        
 						Message: 
 						<textarea id = "messageBox" class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
-                        <button ng-click="getAllMessages()" class="btn btn-info pull-right">Send Message</button>
+                        <button ng-click="sendMessage()" class="btn btn-info pull-right">Send Message</button>
                 
 			</div>
 		</div>
