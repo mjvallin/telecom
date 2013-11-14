@@ -190,37 +190,20 @@ public class RequestHandler implements Runnable {
 	 * @return The response ready to be sent back to the client.
 	 */
 	private ResponseMessage authenticateUser(String request) {
-//		int startPosition = request.indexOf("=") + 1;
-//		int endPosition = request.indexOf(AMP, startPosition);
-//		
-//		// Verifies that it has find the position of the two symbols.
-//		if (startPosition < 0 || endPosition < 0) {
-//			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-//		}
-//		
-//		String userName = request.substring(startPosition, endPosition);
-//		startPosition = request.indexOf("=", endPosition+1) + 1;
-//		// Verifies that it has find the position of the symbol.
-//		if (startPosition < 0) {
-//			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-//		}
-//		String userPassword = request.substring(startPosition, request.length());
-//		
-//		System.out.println("[INFO] The user to authenticate: " + userName + " and its password: " + userPassword);
-		
-		String[] contents = request.split("\\&");
-		String userName = "", userPassword = "";
-		for(int i = 0; i < contents.length; ++i) {
-			String[] tmp = contents[i].split("\\=");
-
-			if(tmp[0].equals("username")) {
-				userName = tmp[1];
-			} else if(tmp[0].equals("password")) {
-				userPassword = tmp[1];
-			}
-		}
-		
 		try {
+			// Get the username and password from the POST's body.
+			String[] contents = request.split("\\&");
+			String userName = "", userPassword = "";
+			for(int i = 0; i < contents.length; ++i) {
+				String[] tmp = contents[i].split("\\=");
+	
+				if(tmp[0].equals("username")) {
+					userName = tmp[1];
+				} else if(tmp[0].equals("password")) {
+					userPassword = tmp[1];
+				}
+			}
+		
 			if (!DBHandler.authenticateUser(userName, userPassword)) {
 				System.out.println("[WARNING] User already authenticated.");
 				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "The user was not successfuly authenticated."));
