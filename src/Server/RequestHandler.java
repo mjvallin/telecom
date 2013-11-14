@@ -333,7 +333,7 @@ public class RequestHandler implements Runnable {
 	 * Creates the Message object that will be stored in the database.
 	 * 
 	 * @param request The request containing the message to be stored.
-	 * @return The message to be stored in the database.
+	 * @return The message to be stored in the database and NULL if an error occurred while creating it.
 	 */
 	private Message createMessageToBeStored(String request) {
 		try {
