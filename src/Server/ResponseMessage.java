@@ -49,7 +49,7 @@ public class ResponseMessage {
 	public String toString() {
 		StringBuilder response = new StringBuilder(100);
 		response.append(HTTP_VERSION + SP + statusCode.toString() + CRLF);
-		response.append(CONTENT_TYPE + SP + contentType.toString() + CRLF);
+		response.append(CONTENT_TYPE + SP + contentType.toString() + CRLF + CRLF);
 		response.append(content + CRLF + LINE_FEED);
 		
 		return (response.toString());
