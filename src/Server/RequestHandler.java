@@ -11,6 +11,11 @@ import java.util.regex.Pattern;
 
 /**
  * Handles all the request made by the client.
+ * 
+ * Under is the supported commands:
+ * "GET allmessages=nick HTTP/1.1" : Get all messages for a specific user.
+ * "GET authenticate=nick/password=userPassword HTTP/1.1" : Authenticate a user with its username and password.
+ * "GET lastmessages=nick HTTP/1.1" : Gets the messages that were not sent yet to the front-end.
  *
  * @author Ming-Ju Lin
  * @author Jean-Sebastien Dery
@@ -20,9 +25,6 @@ import java.util.regex.Pattern;
  *
  */
 public class RequestHandler implements Runnable {
-	private final String CRLF = "\r\n";
-	private final String SP = " ";
-
 	private Socket socket;
 	private String getRequestPattern = "[Gg][Ee][Tt].*";
 	private String postRequestPattern = "[Pp][Oo][Ss][Tt].*";
@@ -182,7 +184,7 @@ public class RequestHandler implements Runnable {
 	 */
 	private ResponseMessage authenticateUser(String request) {
 		int startPosition = request.indexOf("=") + 1;
-		int endPosition = request.indexOf("/", startPosition);
+		int endPosition = request.indexOf("&", startPosition);
 		
 		// Verifies that it has find the position of the two symbols.
 		if (startPosition < 0 || endPosition < 0) {
