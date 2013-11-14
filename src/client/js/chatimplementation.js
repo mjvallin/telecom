@@ -58,9 +58,10 @@ function Chatbox($scope, $http, $resource) {
 	};
 
 	$scope.login = function(){
+		
 			var username = document.getElementById('exampleInputEmail2').value;
 			var password = document.getElementById('exampleInputPassword2').value;
-
+			
 		$http({
 			method: "POST",
 			url: 'http://localhost:1234/login', 
