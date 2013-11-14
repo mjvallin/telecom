@@ -40,12 +40,10 @@
 				 <div class="col-md-4"><h1>User List</h1><p ng-repeat="user in users"> {{user}}</p></div>
 				 <div class="col-md-8"><h1>Messages</h1>
 				 <div class ="pre-scrollable" >
-				 	<div ng-repeat="user in users" class="alert alert-success">
-					  <a href="#" class="alert-link">{{user}}: Hello!</a>
+				 	<div ng-repeat="message in messages" class="alert alert-success">
+					  <a href="#" class="alert-link">{{message.from}}: {{message.content}}</a>
 					</div>
-					<div ng-repeat="user in users" class="alert alert-success">
-					  <a href="#" class="alert-link">{{user}}: Hello!</a>
-					</div>
+					
 				 </div>
 				 </div>
   				
@@ -58,7 +56,7 @@
 						To: <input id = "toUser" class="form-control counted" type="text" name="to">                        
 						Message: 
 						<textarea id = "messageBox" class="form-control counted" name="message" placeholder="Type in your message" rows="5" style="margin-bottom:10px;"></textarea>
-                        <button ng-click="sendMessage()" class="btn btn-info pull-right">Send Message</button>
+                        <button ng-click="getAllMessages()" class="btn btn-info pull-right">Send Message</button>
                 
 			</div>
 		</div>
