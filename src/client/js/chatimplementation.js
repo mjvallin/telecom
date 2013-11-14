@@ -56,6 +56,31 @@ function Chatbox($scope, $http, $resource) {
 			//alert($scope.data);
 		});
 	};
+
+	$scope.login = function(){
+			var username = document.getElementById('exampleInputEmail2').value;
+			var password = document.getElementById('exampleInputPassword2').value;
+
+		$http({
+			method: "POST",
+			url: 'http://localhost:1234/login', 
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+			//data : {'from': 'i.nadim', 'to': 'nick', 'message': 'hi bro'}			
+			data: 'username=' + username + "password=" + password ,
+			//TODO(mingju): this is a bit ugly. Parse from JSON String is better
+		}).
+		  success(function(data, status) {
+			$scope.users = username;
+			alert("Logged in, THANK YOU");
+		  }).
+		  error(function(data, status) {
+			$scope.data = data || "Request failed";
+			$scope.status = status;
+			alert("YO, WRONG PASSWORD OR USERNAME BRO");
+			//alert($scope.data);
+		});
+
+	}
 	
   	$scope.updateModel = function(method, url) {
     	$scope.method = method;
