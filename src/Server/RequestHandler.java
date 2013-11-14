@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
  * 
  * Under is the supported commands:
  * "GET allmessages=username HTTP/1.1" : Get all messages for a specific user.
- * "GET authenticate=username&password=userPassword HTTP/1.1" : Authenticate a user with its username and password.
  * "GET lastmessages=username&lastUid HTTP/1.1" : Gets the messages that were not sent yet to the front-end.
  * 
  * For POST: login and the body of the post request has the username and password
@@ -30,6 +29,8 @@ public class RequestHandler implements Runnable {
 	private Socket socket;
 	private String getRequestPattern = "[Gg][Ee][Tt].*";
 	private String postRequestPattern = "[Pp][Oo][Ss][Tt].*";
+	private String postLoginPattern = ".*[Ll][Oo][Gg][Ii].*";
+	private String postStoreMessagePattern = ".*[Ss][Ee][Nn][Dd][Mm][Ee][Ss][Ss][Aa][Gg][Ee].*";
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
 	private String getRequestAuthenticate = ".*[Aa][Uu][Tt][Hh][Ee][Nn][Tt][Ii][Cc][Aa][Tt][Ee].*[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd].*";
 	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
@@ -87,9 +88,7 @@ public class RequestHandler implements Runnable {
 			response = processGETRequest(request);
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
-			String requestBody = extractBodyFromPOSTRequest(bufferedInput);
-			System.out.println("[INFO] The extracted body is [" + requestBody + "]");
-			response = processPOSTRequest(requestBody);
+			response = processPOSTRequest(requestLine, bufferedInput);
 		} else {
 			response = ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT);
 		}
@@ -194,23 +193,35 @@ public class RequestHandler implements Runnable {
 	 * @return The response ready to be sent back to the client.
 	 */
 	private ResponseMessage authenticateUser(String request) {
-		int startPosition = request.indexOf("=") + 1;
-		int endPosition = request.indexOf(AMP, startPosition);
+//		int startPosition = request.indexOf("=") + 1;
+//		int endPosition = request.indexOf(AMP, startPosition);
+//		
+//		// Verifies that it has find the position of the two symbols.
+//		if (startPosition < 0 || endPosition < 0) {
+//			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+//		}
+//		
+//		String userName = request.substring(startPosition, endPosition);
+//		startPosition = request.indexOf("=", endPosition+1) + 1;
+//		// Verifies that it has find the position of the symbol.
+//		if (startPosition < 0) {
+//			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+//		}
+//		String userPassword = request.substring(startPosition, request.length());
+//		
+//		System.out.println("[INFO] The user to authenticate: " + userName + " and its password: " + userPassword);
 		
-		// Verifies that it has find the position of the two symbols.
-		if (startPosition < 0 || endPosition < 0) {
-			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		String[] contents = request.split("\\&");
+		String userName = "", userPassword = "";
+		for(int i = 0; i < contents.length; ++i) {
+			String[] tmp = contents[i].split("\\=");
+
+			if(tmp[0].equals("username")) {
+				userName = tmp[1];
+			} else if(tmp[0].equals("password")) {
+				userPassword = tmp[1];
+			}
 		}
-		
-		String userName = request.substring(startPosition, endPosition);
-		startPosition = request.indexOf("=", endPosition+1) + 1;
-		// Verifies that it has find the position of the symbol.
-		if (startPosition < 0) {
-			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
-		}
-		String userPassword = request.substring(startPosition, request.length());
-		
-		System.out.println("[INFO] The user to authenticate: " + userName + " and its password: " + userPassword);
 		
 		try {
 			if (!DBHandler.authenticateUser(userName, userPassword)) {
@@ -315,7 +326,7 @@ public class RequestHandler implements Runnable {
 	 * @param request The request to be processed.
 	 * @return The response that will be sent back to the client.
 	 */
-	private ResponseMessage processPOSTRequest(String request) {
+	private ResponseMessage processStoreMessage(String request) {
 		System.out.println("[INFO] Processing POST request.");
 		
 		Message messageToStore = createMessageToBeStored(request);
@@ -338,6 +349,26 @@ public class RequestHandler implements Runnable {
 		}
 
 		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The message was stored succesfully."));
+	}
+	
+	private ResponseMessage processPOSTRequest(String requestHeader, BufferedReader bufferedInput) {
+		String requestBody;
+		try {
+			requestBody = extractBodyFromPOSTRequest(bufferedInput);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
+		
+		if (Pattern.matches(postLoginPattern, requestHeader)) {
+			System.out.println("[INFO] Login user.");
+			return (authenticateUser(requestBody));
+		} else if (Pattern.matches(postStoreMessagePattern, requestHeader)) {
+			System.out.println("[INFO] Storing message.");
+			return (processStoreMessage(requestBody));
+		} else {
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.BAD_REQUEST_FROM_CLIENT));
+		}
 	}
 
 	/**
