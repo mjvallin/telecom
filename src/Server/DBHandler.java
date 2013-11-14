@@ -35,7 +35,7 @@ public class DBHandler {
 		PrintWriter pr = new PrintWriter(fr);
 
 		// Sets the UID of the message to be stored.
-		String nextUid = getNextUid(m.to);
+		int nextUid = getNextUid(m.to);
 		m.setUid(nextUid);
 
 		// write the json string of the message to the file
@@ -52,9 +52,38 @@ public class DBHandler {
 	 *            The user that we want to know what's his next UID.
 	 * @return The next UID.
 	 */
-	private static String getNextUid(String user) {
-		// TODO: To be filled.
-		return "-1";
+	private static int getNextUid(String user) {
+		String filename = user + DB_FILE_TYPE;
+		String path = DB_FOLDER + filename;
+
+		JSONArray messagesInJSON = new JSONArray();
+
+		File f = new File(path);
+		try {
+			FileReader fReader = new FileReader(f);
+			BufferedReader bReader = new BufferedReader(fReader);
+
+			String s = bReader.readLine();
+			while (s != null) {
+				messagesInJSON.put(new JSONObject(s));
+				s = bReader.readLine();
+			}
+
+			fReader.close();
+			bReader.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		int lastUid = messagesInJSON.getJSONObject(messagesInJSON.length() - 1).getInt("uid");
+		
+		return (lastUid + 1);
 	}
 
 	/**
