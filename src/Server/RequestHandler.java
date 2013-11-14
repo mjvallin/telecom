@@ -155,13 +155,13 @@ public class RequestHandler implements Runnable {
 			}
 			
 			String userName = request.substring(startPosition, endPosition);
-			startPosition = request.indexOf(AMP, endPosition+1) + 1;
-			// Verifies that it has find the position of the symbol.
-			if (startPosition < 0) {
-				throw new RuntimeException("The start position is negative.");
-			}
 			
-			String lastUidReceived = request.substring(startPosition, request.length());
+			System.out.println("[INFO] The username is=" + userName);
+			
+			String lastUidReceived = request.substring(endPosition + 1, request.length());
+			
+			System.out.println("[INFO] The last received uid is=" + lastUidReceived);
+			
 			int lastUid = Integer.parseInt(lastUidReceived);
 		
 			// Verifies if the user is already authenticated.
