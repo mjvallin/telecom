@@ -156,9 +156,41 @@ public class DBHandler {
 	 * @return The JSON formatted list of new messages and NULL if there is
 	 *         nothing that the User has not already fetched.
 	 */
-	public static String getLastMessages(String username) {
-		// TODO: To be filled.
-		return (null);
+	public static String getLastMessages(String username, int lastUid) {
+		String filename = username + DB_FILE_TYPE;
+		String path = DB_FOLDER + filename;
+
+		JSONArray messagesInJSON = new JSONArray();
+
+		File f = new File(path);
+		try {
+			FileReader fReader = new FileReader(f);
+			BufferedReader bReader = new BufferedReader(fReader);
+
+			String s = bReader.readLine();
+			while (s != null) {
+				JSONObject jsonObj = new JSONObject(s);
+				
+				if (jsonObj.getInt("uid") > lastUid)
+				{
+					messagesInJSON.put(jsonObj);
+				}
+				s = bReader.readLine();
+			}
+
+			fReader.close();
+			bReader.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return messagesInJSON.toString();
 	}
 
 	/**
@@ -244,7 +276,7 @@ public class DBHandler {
 	}
 
 	public static void main(String[] args) {
-		DBHandler db = new DBHandler();
+		/*DBHandler db = new DBHandler();
 	
 		Message mOne = new Message("nadim", "nick","Hey man whats going on doodsky?"); Message mTwo = new Message("js","nick", "you my boy");	
 		try {
@@ -261,7 +293,7 @@ public class DBHandler {
 		}
 	
 		String s = getMessages("nick"); System.out.println(s);
-
+*/
 		// System.out.println(authenticateUser("nick", "123456"));
 		// System.out.println(authenticateUser("nick", "1266656"));
 		// System.out.println(getallUsernames());
