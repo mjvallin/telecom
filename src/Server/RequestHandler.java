@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Handles all the request made by the client. 
+ * Handles all the request made by the client.
  *
  * @author Ming-Ju Lin
  * @author Jean-Sebastien Dery
