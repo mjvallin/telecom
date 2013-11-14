@@ -16,7 +16,11 @@ import java.util.regex.Pattern;
  * "GET allmessages=username HTTP/1.1" : Get all messages for a specific user.
  * "GET lastmessages=username&lastUid HTTP/1.1" : Gets the messages that were not sent yet to the front-end.
  * 
- * For POST: login and the body of the post request has the username and password
+ * "POST login HTTP/1.1" : Logins a user to the server.
+ * "Body contain the username and password"
+ * 
+ * "POST sendmessage HTTP/1.1" : Sends a message to a user.
+ * "Body contains From, To and Message"
  *
  * @author Ming-Ju Lin
  * @author Jean-Sebastien Dery
