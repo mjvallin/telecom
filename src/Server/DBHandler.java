@@ -276,7 +276,7 @@ public class DBHandler {
 	}
 
 	public static void main(String[] args) {
-		/*DBHandler db = new DBHandler();
+		DBHandler db = new DBHandler();
 	
 		Message mOne = new Message("nadim", "nick","Hey man whats going on doodsky?"); Message mTwo = new Message("js","nick", "you my boy");	
 		try {
@@ -292,8 +292,8 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 	
-		String s = getMessages("nick"); System.out.println(s);
-*/
+		String s = getLastMessages("nick", 1); System.out.println(s);
+
 		// System.out.println(authenticateUser("nick", "123456"));
 		// System.out.println(authenticateUser("nick", "1266656"));
 		// System.out.println(getallUsernames());
