@@ -188,6 +188,8 @@ public class RequestHandler implements Runnable {
 	 * @return The response ready to be sent back to the client.
 	 */
 	private ResponseMessage authenticateUser(String request) {
+		System.out.println("[INFO] POST Body=" + request);
+		
 		try {
 			// Get the username and password from the POST's body.
 			String[] contents = request.split("\\&");
@@ -201,9 +203,11 @@ public class RequestHandler implements Runnable {
 					userPassword = tmp[1];
 				}
 			}
+			
+			System.out.println("Username=" + userName);
+			System.out.println("Password=" + userPassword);
 		
 			if (!DBHandler.authenticateUser(userName, userPassword)) {
-				System.out.println("[WARNING] User already authenticated.");
 				return (new ResponseMessage(ResponseCode.UNAUTHORIZED, ContentType.TEXT_PLAIN, "The user was not successfuly authenticated."));
 			}
 		} catch(Exception e) {
