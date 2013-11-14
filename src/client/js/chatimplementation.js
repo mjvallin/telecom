@@ -71,8 +71,9 @@ function Chatbox($scope, $http, $resource) {
 			//TODO(mingju): this is a bit ugly. Parse from JSON String is better
 		}).
 		  success(function(data, status) {
-			$scope.users = username;
+			$scope.user = username;
 			$scope.loggedin = true;
+			$scope.getAllMessages(username);
 			alert("Logged in, THANK YOU");
 		  }).
 		  error(function(data, status) {
@@ -83,13 +84,11 @@ function Chatbox($scope, $http, $resource) {
 		});
 
 	}
-	$scope.getAllMessages = function() {
-		
-		$user = "nick";
+	$scope.getAllMessages = function(user) {
 		
 		$http({
 			method: "GET",
-			url: 'http://localhost:1234/allmessages=nick', 
+			url: 'http://localhost:1234/allmessages='+user, 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 		}).
 		  success(function(data, status) {

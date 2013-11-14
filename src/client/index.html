@@ -11,7 +11,7 @@
 	</head>
 	<body>
 		<div class="container" ng-controller="Chatbox">
-		<div ng-show = "!loggedin" class="row" style="background:#EEE; height:45px;">
+		<div  ng-show = "!loggedin" class="row" style="background:#EEE; height:45px;">
 			<div class="container">
 			<form class="form-inline" role="form" style="margin-top:5px;">
 			  <div class="form-group">
@@ -31,11 +31,11 @@
 
 			</form>
 			</div>
-		
+		</div>
 			
 
-			<div class="row" ng-show = "loggedin">
-				Hello {{User}}
+			<div class="row" ng-show = "loggedin" style="background:#EEE; height:45px;">
+				<div class="container">Hello {{user}}</div>
 			</div>
 
 			<div class="row">
