@@ -13,9 +13,11 @@ import java.util.regex.Pattern;
  * Handles all the request made by the client.
  * 
  * Under is the supported commands:
- * "GET allmessages=nick HTTP/1.1" : Get all messages for a specific user.
- * "GET authenticate=nick/password=userPassword HTTP/1.1" : Authenticate a user with its username and password.
- * "GET lastmessages=nick HTTP/1.1" : Gets the messages that were not sent yet to the front-end.
+ * "GET allmessages=username HTTP/1.1" : Get all messages for a specific user.
+ * "GET authenticate=username&password=userPassword HTTP/1.1" : Authenticate a user with its username and password.
+ * "GET lastmessages=username&lastUid HTTP/1.1" : Gets the messages that were not sent yet to the front-end.
+ * 
+ * For POST: login and the body of the post request has the username and password
  *
  * @author Ming-Ju Lin
  * @author Jean-Sebastien Dery
@@ -33,6 +35,7 @@ public class RequestHandler implements Runnable {
 	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private String getRequestGetLastMessages = ".*[Ll][Aa][Ss][Tt][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private final int ASCII_SPACE_CHAR = 32;
+	private final String AMP = "&";
 	
 	/**
 	 * Constructor takes the socket for this request
@@ -147,13 +150,29 @@ public class RequestHandler implements Runnable {
 	 */
 	private ResponseMessage getLastMessages(String request) {
 		int startPosition = request.indexOf("=") + 1;
+		int endPosition = request.indexOf(AMP, startPosition);
 		
+		// Verifies that it has find the position of the two symbols.
+		if (startPosition < 0 || endPosition < 0) {
+			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+		}
+		
+		String userName = request.substring(startPosition, endPosition);
+		startPosition = request.indexOf(AMP, endPosition+1) + 1;
 		// Verifies that it has find the position of the symbol.
 		if (startPosition < 0) {
 			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
 		}
+		String lastUidReceived = request.substring(startPosition, request.length());
 		
-		String userName = request.substring(startPosition, request.length());
+//		int startPosition = request.indexOf("=") + 1;
+//		
+//		// Verifies that it has find the position of the symbol.
+//		if (startPosition < 0) {
+//			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
+//		}
+//		
+//		String userName = request.substring(startPosition, request.length());
 		
 		try {
 			// Verifies if the user is already authenticated.
@@ -184,7 +203,7 @@ public class RequestHandler implements Runnable {
 	 */
 	private ResponseMessage authenticateUser(String request) {
 		int startPosition = request.indexOf("=") + 1;
-		int endPosition = request.indexOf("&", startPosition);
+		int endPosition = request.indexOf(AMP, startPosition);
 		
 		// Verifies that it has find the position of the two symbols.
 		if (startPosition < 0 || endPosition < 0) {
