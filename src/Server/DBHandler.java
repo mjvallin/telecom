@@ -74,6 +74,7 @@ public class DBHandler {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return 0;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,9 +82,15 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 
-		int lastUid = messagesInJSON.getJSONObject(messagesInJSON.length() - 1).getInt("uid");
-		
-		return (lastUid + 1);
+		if (messagesInJSON.length() == 0)
+		{
+			return 0;
+		}
+		else
+		{
+			int lastUid = messagesInJSON.getJSONObject(messagesInJSON.length() - 1).getInt("uid");	
+			return (lastUid + 1);
+		}
 	}
 
 	/**
