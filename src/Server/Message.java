@@ -10,7 +10,7 @@ public class Message {
 	public String to;
 	public String content;
 	@SuppressWarnings("unused")
-	private String uid = null;
+	public int uid;
 	JSONObject jsonObj;
 
 	public Message(String from, String to, String content) {
@@ -32,7 +32,7 @@ public class Message {
 	 *            The UID to be set.
 	 * @throws JSONException
 	 */
-	public void setUid(String uid) throws JSONException {
+	public void setUid(int uid) throws JSONException {
 		jsonObj.put(UID, uid);
 		this.uid = uid;
 	}
