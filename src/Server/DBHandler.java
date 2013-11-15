@@ -23,21 +23,22 @@ public class DBHandler {
 	 * 
 	 * @param m
 	 *            The message to be stored.
-	 * @throws Exception 
+	 * @param destination
+	 *            The person to which we want to save to message to.
+	 * @throws Exception
 	 */
-	public static void storeMessage(Message m) throws Exception {
-		String filename = m.to + DB_FILE_TYPE;
+	public static void storeMessage(Message m, String destination)
+			throws Exception {
+		String filename = destination + DB_FILE_TYPE;
 		String path = DB_FOLDER + filename;
 
 		File f = new File(path);
-
 		FileWriter fr = new FileWriter(f, true);
 		PrintWriter pr = new PrintWriter(fr);
-
+		// Saves the message for the destination.
 		// Sets the UID of the message to be stored.
-		int nextUid = getNextUid(m.to);
+		int nextUid = getNextUid(destination);
 		m.setUid(nextUid);
-
 		// write the json string of the message to the file
 		pr.println(m.getJSONString());
 
@@ -51,7 +52,7 @@ public class DBHandler {
 	 * @param user
 	 *            The user that we want to know what's his next UID.
 	 * @return The next UID.
-	 * @throws JSONException 
+	 * @throws JSONException
 	 */
 	private static int getNextUid(String user) throws JSONException {
 		String filename = user + DB_FILE_TYPE;
@@ -83,13 +84,11 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 
-		if (messagesInJSON.length() == 0)
-		{
+		if (messagesInJSON.length() == 0) {
 			return 0;
-		}
-		else
-		{
-			int lastUid = messagesInJSON.getJSONObject(messagesInJSON.length() - 1).getInt("uid");	
+		} else {
+			int lastUid = messagesInJSON.getJSONObject(
+					messagesInJSON.length() - 1).getInt("uid");
 			return (lastUid + 1);
 		}
 	}
@@ -158,9 +157,8 @@ public class DBHandler {
 			String s = bReader.readLine();
 			while (s != null) {
 				JSONObject jsonObj = new JSONObject(s);
-				
-				if (jsonObj.getInt("uid") > lastUid)
-				{
+
+				if (jsonObj.getInt("uid") > lastUid) {
 					messagesInJSON.put(jsonObj);
 				}
 				s = bReader.readLine();
@@ -265,22 +263,25 @@ public class DBHandler {
 
 	public static void main(String[] args) {
 		DBHandler db = new DBHandler();
-	
-		Message mOne = new Message("nadim", "nick","Hey man whats going on doodsky?"); Message mTwo = new Message("js","nick", "you my boy");	
+
+		Message mOne = new Message("nadim", "nick",
+				"Hey man whats going on doodsky?");
+		Message mTwo = new Message("js", "nick", "you my boy");
 		try {
-			storeMessage(mOne);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		try {
-			storeMessage(mTwo);
+			storeMessage(mOne, mOne.to);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		String s = getLastMessages("nick", 1); System.out.println(s);
+		try {
+			storeMessage(mTwo, mTwo.to);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String s = getLastMessages("nick", 1);
+		System.out.println(s);
 
 		// System.out.println(authenticateUser("nick", "123456"));
 		// System.out.println(authenticateUser("nick", "1266656"));

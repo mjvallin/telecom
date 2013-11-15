@@ -307,7 +307,8 @@ public class RequestHandler implements Runnable {
 		}
 		
 		try {			
-			DBHandler.storeMessage(messageToStore);
+			DBHandler.storeMessage(messageToStore, messageToStore.to);
+			DBHandler.storeMessage(messageToStore, messageToStore.from);
 		} catch(Exception e) {
 			e.printStackTrace();
 			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
