@@ -47,15 +47,15 @@ function Chatbox($scope, $http, $resource) {
 		}).
 		  success(function(data, status) {
 			$scope.status = status;
-			$scope.data = data;
-			alert("pass");
+			$scope.messages = data;
+			
 		  }).
 		  error(function(data, status) {
 			$scope.data = data || "Request failed";
 			$scope.status = status;
 			//alert($scope.data);
 		});
-		  $scope.getAllMessages($scope.user);
+		//$scope.getAllMessages($scope.user);
 	};
 
 	$scope.login = function(){
@@ -127,6 +127,16 @@ function Chatbox($scope, $http, $resource) {
     	$scope.method = method;
     	$scope.url = url;
   	};
-	
+	$scope.getMessageClass = function(from){
+
+		if(from==$scope.user)
+		{
+			return "alert alert-info";
+		}
+		else
+		{
+			return "alert alert-success";
+		}
+	}
 	
 }
