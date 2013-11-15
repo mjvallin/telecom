@@ -314,7 +314,10 @@ public class RequestHandler implements Runnable {
 			return (ResponseMessage.responseMessageFactory(DefaultResponses.SERVER_ERROR_MESSAGE));
 		}
 
-		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The message was stored succesfully."));
+		String response = DBHandler.getMessages(messageToStore.from);
+		
+		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, response));
+//		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The message was stored succesfully."));
 	}
 	
 	private ResponseMessage processPOSTRequest(String requestHeader, String requestBody) {		
