@@ -42,8 +42,11 @@
 				 <div class="col-md-4"><h1>User List</h1><p ng-repeat="user in users"> {{user}}</p></div>
 				 <div class="col-md-8"><h1>Messages</h1>
 				 <div class ="pre-scrollable" >
-				 	<div ng-repeat="message in messages" class="alert alert-success">
-					  <a href="#" class="alert-link">{{message.from}}: {{message.content}}</a>
+				 
+				 	<div ng-repeat="message in messages">
+				 	<div   class="{{getMessageClass(message.from)}}">
+					  <a  href="#">{{message.from}}: {{message.content}}</a>
+					</div>
 					</div>
 					
 				 </div>
