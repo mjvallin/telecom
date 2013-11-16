@@ -7,7 +7,7 @@ function Chatbox($scope, $http, $resource) {
 	$scope.method = 'POST';
 	$scope.url = 'http://localhost:1234/';
 	$scope.users = ["i.nadim", "mjval_lin", "jdery", "nick"];
-	
+
 	
 	$scope.postdata = function() {
 		$scope.code = null;
@@ -86,7 +86,8 @@ function Chatbox($scope, $http, $resource) {
 
 	}
 	$scope.getAllMessages = function(user) {
-		
+		var objDiv = document.getElementById("div1");
+		objDiv.scrollTop = objDiv.scrollHeight;
 		$http({
 			method: "GET",
 			url: 'http://localhost:1234/allmessages='+user, 
