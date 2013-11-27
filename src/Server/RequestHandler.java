@@ -2,6 +2,8 @@ package Server;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -38,8 +40,14 @@ public class RequestHandler implements Runnable {
 	private String contentLengthPattern = "[Cc][Oo][Nn][Tt][Ee][Nn][Tt][-][Ll][Ee][Nn][Gg][Tt][Hh].*";
 	private String getRequestGetAllMessages = ".*[Aa][Ll][Ll][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
 	private String getRequestGetLastMessages = ".*[Ll][Aa][Ss][Tt][Mm][Ee][Ss][Ss][Aa][Gg][Ee][Ss].*";
+	private String getBootstrap = ".*bootstrap.?css.*";
+	private String getAngularResource = ".*angular-resource.?js.*";
+	private String getAngular = ".*angular.?js.*";
+	private String getChatImplementation = ".*chatimplementation.?js.*";
 	private final int ASCII_SPACE_CHAR = 32;
 	private final String AMP = "&";
+	private final String CRLF = "\r\n";
+	private final String SP = " ";
 	
 	/**
 	 * Constructor takes the socket for this request
@@ -88,6 +96,80 @@ public class RequestHandler implements Runnable {
 		if (Pattern.matches(getRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a GET.");
 			request = extractContentFromGETRequest(requestLine);
+			
+			boolean sendingFileToClient = false;
+			String fileName = null;
+			
+			if (request.equals(" /")) {
+				System.out.println("[INFO] Serving the main page to the client.");
+				fileName = "index.html";
+				sendingFileToClient = true;
+			} else if (Pattern.matches(getBootstrap, requestLine)) {
+				System.out.println("[INFO] Serving bootstrap.css to the client.");
+				fileName = "css/bootstrap.css";
+				sendingFileToClient = true;
+			} else if (Pattern.matches(getAngular, requestLine)) {
+				System.out.println("[INFO] Serving angular.js to the client.");
+				fileName = "js/angular.js";
+				sendingFileToClient = true;
+			} else if (Pattern.matches(getChatImplementation, requestLine)) {
+				System.out.println("[INFO] Serving chatimplementation.js to the client.");
+				fileName = "js/chatimplementation.js";
+				sendingFileToClient = true;
+			} else if (Pattern.matches(getAngularResource, requestLine)) {
+				System.out.println("[INFO] Serving angular-resource.js to the client.");
+				fileName = "js/angular-resource.js";
+				sendingFileToClient = true;
+			}
+			
+			// Serve the page to the client.
+			// The index and folders related to the client stuff need to be in the workspace folder.
+			if (sendingFileToClient) {				
+				System.out.println("[INFO] Opening the file=" + fileName);
+				// Open the requested file
+				FileInputStream fis = null;
+				boolean fileExists = true;
+				try {
+					fis = new FileInputStream(fileName);
+				} catch (FileNotFoundException e) {
+					fileExists = false;
+				}
+				
+				// Construct the response message header
+				String statusLine = null;
+				String contentTypeLine = "Content-Type:";
+				String errorMessage = "<HTML><HEAD><TITLE>404 Not Found</TITLE></HEAD><BODY>404 Not Found</BODY></HTML>";
+
+				// Fill in the values of statusLine and contentTypeLine based on whether
+				// or not the requested file was found
+				if (fileExists) {
+					statusLine = "HTTP/1.0" + SP + 200 + SP + "OK" + CRLF;
+					contentTypeLine = contentTypeLine + SP + RequestHandler.contentType(fileName) + CRLF;
+				} else {
+					statusLine = "HTTP/1.0" + SP + 404 + SP + "Not Found" + CRLF;
+					contentTypeLine = contentTypeLine + SP + "text/html" + CRLF;
+				}
+
+				dataOutputStream.writeBytes(statusLine);
+				dataOutputStream.writeBytes(contentTypeLine);
+				dataOutputStream.writeBytes(CRLF);
+				
+				System.out.println("Header sent to the cliend:\n" + statusLine + contentTypeLine);
+				
+				// Send the body of the message (the web object)
+				// You may use the sendBytes helper method provided
+				if (fileExists) {
+					RequestHandler.sendBytes(fis, socketOutputStream);
+				} else {
+					dataOutputStream.writeBytes(errorMessage);
+				}
+				
+				socketInputStream.close();
+				socketOutputStream.close();
+				this.socket.close();
+				return;
+			}
+			
 			response = processGETRequest(request);
 		} else if (Pattern.matches(postRequestPattern, requestLine)) {
 			System.out.println("[INFO] The received request is a POST.");
@@ -107,6 +189,43 @@ public class RequestHandler implements Runnable {
 		socketInputStream.close();
 		socketOutputStream.close();
 		this.socket.close();
+	}
+	
+	/**
+	 * Private helper method to read the file and send it to the socket
+	 * @param fis
+	 * @param os
+	 * @throws Exception
+	 */
+	private static void sendBytes(FileInputStream fis, OutputStream os) throws Exception	{
+		// Allocate a 1k buffer to hold bytes on their way to the socket
+		byte[] buffer = new byte[1024];
+		int bytes = 0;
+		
+		// Copy requested file into the socket's output stream
+		while ((bytes = fis.read(buffer)) != -1) {
+			os.write(buffer, 0, bytes);
+		}
+	}
+	
+	/**
+	 * Private method that returns the appropriate MIME-type string based on the
+	 * suffix of the appended file
+	 * @param fileName
+	 * @return
+	 */
+	private static String contentType(String fileName) {
+		if (fileName.endsWith(".htm") || fileName.endsWith(".html")) {
+			return "text/html";
+		} else if (fileName.endsWith(".js")) {
+			return ("text/javascript");
+		} else if (fileName.endsWith(".css")) {
+			return ("text/css");
+		}
+		
+		System.out.println("[WARNING] Cannot find proper Content-Type for file name=" + fileName);
+		
+		return "application/octet-stream";
 	}
 
 	/**
