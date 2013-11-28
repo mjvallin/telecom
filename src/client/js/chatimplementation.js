@@ -20,7 +20,7 @@ function Chatbox($scope, $http, $resource) {
 	
 		$http({
 			method: "POST",
-			url: 'http://localhost:1234/sendmessage', 
+			url: '/sendmessage', 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 			data: 'from=' + fromUser + "&to=" + toUser + "&message=" + text,
 		}).
@@ -41,7 +41,7 @@ function Chatbox($scope, $http, $resource) {
 			
 		$http({
 			method: "POST",
-			url: 'http://localhost:1234/login', 
+			url: '/login', 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},		
 			data: 'username=' + username + "&password=" + password,
 		}).
@@ -63,7 +63,7 @@ function Chatbox($scope, $http, $resource) {
 		objDiv.scrollTop = objDiv.scrollHeight;
 		$http({
 			method: "GET",
-			url: 'http://localhost:1234/allmessages='+user, 
+			url: '/allmessages='+user, 
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 		}).
 		  success(function(data, status) {
