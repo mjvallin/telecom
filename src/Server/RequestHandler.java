@@ -436,7 +436,6 @@ public class RequestHandler implements Runnable {
 		String response = DBHandler.getMessages(messageToStore.from);
 		
 		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, response));
-//		return (new ResponseMessage(ResponseCode.OK, ContentType.TEXT_PLAIN, "The message was stored succesfully."));
 	}
 	
 	private ResponseMessage processPOSTRequest(String requestHeader, String requestBody) {		
@@ -469,8 +468,6 @@ public class RequestHandler implements Runnable {
 				} else if(tmp[0].equals("to")) {
 					to = tmp[1];
 				} else if(tmp[0].equals("message")) {
-					//TODO(mingju): @Nadim, gimme the name of the textarea here
-					// assume content is nicely formatted
 					content = tmp[1].replace('+', ' ');
 				}
 			}

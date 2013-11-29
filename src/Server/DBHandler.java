@@ -260,31 +260,4 @@ public class DBHandler {
 
 		return usernamesInJSON.toString();
 	}
-
-	public static void main(String[] args) {
-		DBHandler db = new DBHandler();
-
-		Message mOne = new Message("nadim", "nick",
-				"Hey man whats going on doodsky?");
-		Message mTwo = new Message("js", "nick", "you my boy");
-		try {
-			storeMessage(mOne, mOne.to);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			storeMessage(mTwo, mTwo.to);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		String s = getLastMessages("nick", 1);
-		System.out.println(s);
-
-		// System.out.println(authenticateUser("nick", "123456"));
-		// System.out.println(authenticateUser("nick", "1266656"));
-		// System.out.println(getallUsernames());
-	}
 }

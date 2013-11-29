@@ -37,13 +37,14 @@ public class Server {
 
 		@SuppressWarnings("resource")
 		ServerSocket welcomeSocket = new ServerSocket(port);
+		
+		System.out.println("[INFO] Application started...");
 
 		// Enter an infinite loop and process incoming connections
 		// Use Ctrl-C to quit the application
 		while (true) {
 			// Listen for a new TCP connection request
 			Socket connectionSocket = welcomeSocket.accept();
-
 			// Construct an RequestHandler object to process the request message.
 			RequestHandler currentHttpRequest = new RequestHandler(connectionSocket);
 
