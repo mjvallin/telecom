@@ -26,7 +26,7 @@ user3		|	pwd
 --------------------------------------------------------------------------------------------
 
 ALTERNATIVE: 
-THE FOLLOWING IS NEEDED IF YOU ARE INTERESTED IN COMPILING THE CODE BY YOURSELF
+THE FOLLOWING IS NEEDED ONLY IF YOU ARE INTERESTED IN COMPILING THE CODE BY YOURSELF
 
 compile and run using eclipse for simplicty:
 
