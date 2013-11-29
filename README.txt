@@ -1,23 +1,14 @@
 WARNING:
 BEFORE YOU DO ANYTHING, REMEMBER NOT TO CHANGE THE STRUCTURE OF CLIENT FOLDER.
 
-All files and folders need to be present in order for the program to work
-Here is the folder structure:
-   /client
-    css/
-    db/
-    js/
-    index.html
-    WebMessagingApp.jar  
-
 To run the application, please do the following:
 
 ================To set up the back-end server=============
-1. Open a command prompt(terminal) and change the current working directory to where WebMessagingApp.jar is.
-The path to WebMessagingApp.jar relatively to this README file is: ./src/client/
-(type “cd src/client” without the quotation mark)
-   
-2. Run the server in command prompt as follows: java -jar WebMesagingApp.jar
+1. Open a command prompt(terminal) and change the current working directory to ./src/client/ 
+relative to the directory containing this README file. There should be a file in this directory 
+called WebMessagingApp.jar
+
+2. Run the server in command prompt as follows: java -jar WebMessagingApp.jar
 ===========================================================
 
 ================To run the front-end client================
