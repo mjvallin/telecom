@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
  * "POST sendmessage HTTP/1.1" : Sends a message to a user.
  * "Body contains From, To and Message"
  *
+ * @author michaelrabbat
  * @author Ming-Ju Lin
  * @author Jean-Sebastien Dery
  * @author Fakrul Islam

@@ -3,6 +3,17 @@ package Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Message entity class
+ * 
+ * @author Ming-Ju Lin
+ * @author Jean-Sebastien Dery
+ * @author Fakrul Islam
+ * @author Sen Li
+ * @author Nicholas Destounis
+ * 
+ */
+
 public class Message {
 	private final String UID = "uid";
 

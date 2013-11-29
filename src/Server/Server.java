@@ -9,12 +9,6 @@ package Server;
  * response message with the appropriate HTML code so that the error information
  * is displayed.  
  * 
- * @author Ming-Ju Lin
- * @author Jean-Sebastien Dery
- * @author Fakrul Islam
- * @author Sen Li
- * @author Nicholas Destounis
- *
  */
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,6 +18,11 @@ import java.net.Socket;
  * and spawns new threads to handle each request.
  * 
  * @author michaelrabbat
+ * @author Ming-Ju Lin
+ * @author Jean-Sebastien Dery
+ * @author Fakrul Islam
+ * @author Sen Li
+ * @author Nicholas Destounis
  * 
  */
 public class Server {

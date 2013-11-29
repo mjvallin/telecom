@@ -12,6 +12,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+* Database handler that manages database storage, fetching, etc. 
+* 
+* @author Ming-Ju Lin
+* @author Jean-Sebastien Dery
+* @author Fakrul Islam
+* @author Sen Li
+* @author Nicholas Destounis
+*
+*/
+
 public class DBHandler {
 	public static final String DB_FOLDER = "db/";
 	public static final String DB_FILE_TYPE = ".txt";
