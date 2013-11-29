@@ -1,8 +1,0 @@
-{"content":"Hey man whats goinklfdgsdklgg on doodsky?","to":"nick","uid":0,"from":"nadim"}
-{"content":"you msgfsgy boy","to":"nick","uid":1,"from":"js"}
-{"content":"Hey man sdfgsgdffsdwhats going on doodsky?","to":"nick","uid":2,"from":"nadim"}
-{"content":"you my fsdgffgsdgfdsgfdboy","to":"nick","uid":3,"from":"js"}
-{"content":"Hey man whats going on dosdfgsfdsodsky?","to":"nick","uid":4,"from":"nadim"}
-{"content":"you mysgdffdsg boy","to":"nick","uid":5,"from":"js"}
-{"content":"Hey man whasdgfffsdgts going on doodsky?","to":"nick","uid":6,"from":"nadim"}
-{"content":"you sdfgdsfgsdmy boy","to":"nick","uid":7,"from":"js"}
