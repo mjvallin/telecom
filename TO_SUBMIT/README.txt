@@ -23,16 +23,3 @@ user1		|	pwd
 user2		|	pwd
 user3		|	pwd
 ===========================================================
---------------------------------------------------------------------------------------------
-
-ALTERNATIVE: 
-THE FOLLOWING IS NEEDED IF YOU ARE INTERESTED IN COMPILING THE CODE BY YOURSELF
-
-compile and run using eclipse for simplicty:
-
-1. Create an Eclipse Project
-2. Create a package named Server and put all the java files in ./src/Server in the package
-3. Create a package named org.json and put all the java file in ./src/org/json in the package
-4. Copy paste everything in ./src/client to your Eclipse workspace (at the same level with the .project file)
-5. Run Server.java
-6. Run the client by opening a web browser (tested browser: Chrome, Safari) and type localhost:1234 in the address bar and press enter
